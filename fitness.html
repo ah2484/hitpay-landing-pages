@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HitPay for Gyms & Fitness Studios — Automate Memberships, Book Classes, Get Paid</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    .gradient-hero { background: linear-gradient(135deg, #f0fdf4 0%, #ffffff 60%); }
+    .gradient-cta { background: linear-gradient(135deg, #15803d 0%, #22c55e 100%); }
+    .feature-card { transition: box-shadow 0.2s; }
+    .feature-card:hover { box-shadow: 0 8px 30px rgba(34,197,94,0.12); }
+    .payment-badge { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; background: white; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 0.8rem; font-weight: 500; color: #334155; }
+  </style>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {"@type":"Question","name":"How can gyms and fitness studios automate monthly membership billing?","acceptedAnswer":{"@type":"Answer","text":"With HitPay's Recurring Billing, you create your membership plans — for example, S$88/month for Basic Access — and share the sign-up link with new members. They subscribe once and HitPay automatically charges them on their renewal date each month, sends a receipt, and retries any failed payments. You see all active members, MRR, and upcoming renewals in one dashboard."}},
+      {"@type":"Question","name":"What happens if a member's monthly payment fails?","acceptedAnswer":{"@type":"Answer","text":"HitPay automatically retries failed payments using smart dunning logic — attempting the charge again at optimal intervals to maximise collection rate without manual effort. Members receive an automated notification to update their payment method. You can see all failed attempts, retries, and outcomes in your dashboard without any manual follow-up."}},
+      {"@type":"Question","name":"Can I sell drop-in class passes and trial sessions via WhatsApp or Instagram?","acceptedAnswer":{"@type":"Answer","text":"Yes. HitPay Payment Links let you create a class-specific link in under 60 seconds and share it via WhatsApp, Instagram Stories, or link-in-bio. Clients pay to lock in their spot and you receive instant confirmation. You can set a quantity limit on each link to prevent overbooking — the link automatically closes when all spots are filled."}},
+      {"@type":"Question","name":"Can members manage or cancel their own gym membership?","acceptedAnswer":{"@type":"Answer","text":"Yes. HitPay provides a member self-service portal where members can update their payment method, view billing history, pause, or cancel their membership — without needing to call or WhatsApp you. This reduces admin time significantly and improves member experience, particularly for members who travel or take seasonal breaks."}},
+      {"@type":"Question","name":"Is HitPay suitable for small yoga, pilates, or CrossFit studios with under 50 members?","acceptedAnswer":{"@type":"Answer","text":"Absolutely. HitPay has no monthly platform fees and no minimum member count — studios with 10 members or 500 members pay the same low per-transaction rate. This makes HitPay accessible from day one, even for studios that are just getting started. Many boutique yoga and pilates studios use HitPay as their primary billing system."}},
+      {"@type":"Question","name":"I'm currently collecting gym fees manually via PayNow every month — how do I automate this?","acceptedAnswer":{"@type":"Answer","text":"Set up HitPay Recurring Billing once: create your membership plan, send each member their personal subscription sign-up link, and they authorise the first payment. Every subsequent month, HitPay charges them automatically and sends a receipt — you don't touch anything. Most gym owners complete the migration of all members within a week. After that, you never manually check your bank app for gym fee transfers again."}},
+      {"@type":"Question","name":"Can I offer new members a free trial period or discounted first month before charging full price?","acceptedAnswer":{"@type":"Answer","text":"Yes. HitPay supports trial periods and introductory pricing. You can create a separate First Month plan at a reduced rate and then migrate the member to your standard plan after the trial. Alternatively, set up a plan with a discounted first charge and standard recurring amount from the second charge onward. This is a common strategy for CrossFit boxes and yoga studios running first week free or first month at 50% promotions."}},
+      {"@type":"Question","name":"Does HitPay integrate with Mindbody or Glofox gym management software?","acceptedAnswer":{"@type":"Answer","text":"HitPay connects to Mindbody, Glofox, and other gym management platforms via Zapier — you can set up automations where a new member in your booking system triggers a HitPay subscription link being sent to them automatically. For deeper integrations, HitPay's REST API allows custom connections to any gym management system. Contact the HitPay sales team for enterprise integration support."}},
+      {"@type":"Question","name":"Can I sell personal training packages and supplement bundles from the same HitPay account?","acceptedAnswer":{"@type":"Answer","text":"Yes. Your HitPay account handles both recurring memberships and one-off product sales from the same dashboard. Your Online Store can list PT session packages, 10-class bundles, protein supplements, branded apparel, and accessories side by side. Customers can purchase any product in a single checkout, and all revenue — whether from memberships or merchandise — is tracked in one unified report."}},
+      {"@type":"Question","name":"How long does it take to set up HitPay and migrate existing gym members to auto-billing?","acceptedAnswer":{"@type":"Answer","text":"Account setup typically takes 1–2 business days for verification. Once approved, you create your membership plans in under 10 minutes and send each existing member a subscription sign-up link via WhatsApp. Most members complete the sign-up in under 2 minutes. For a gym with 100 members, the full migration can realistically be completed within a week — and often much faster if you bulk-send links with a simple WhatsApp broadcast message."}}
+    ]
+  }
+  </script>
+</head>
+<body class="bg-white text-slate-900">
+
+  <!-- Nav -->
+  <header class="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-sm border-b border-slate-200">
+    <div class="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
+      <div class="flex items-center gap-8">
+        <a href="index.html" class="flex items-center gap-2">
+          <div class="w-8 h-8 bg-green-600 rounded-lg flex items-center justify-center">
+            <span class="text-white font-bold text-sm">H</span>
+          </div>
+          <span class="font-bold text-lg text-slate-900">HitPay</span>
+        </a>
+        <nav class="hidden md:flex items-center gap-6 text-sm font-medium text-slate-600">
+          <a href="#" class="hover:text-slate-900">Products</a>
+          <a href="#" class="hover:text-slate-900">Solutions</a>
+          <a href="#" class="hover:text-slate-900">Pricing</a>
+          <a href="#" class="hover:text-slate-900">Developers</a>
+          <a href="#" class="hover:text-slate-900">Resources</a>
+        </nav>
+      </div>
+      <div class="flex items-center gap-3">
+        <a href="#" class="text-sm font-medium text-slate-600 hover:text-slate-900">Sign in</a>
+        <a href="#" class="text-sm font-semibold bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors">Get started</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <section class="gradient-hero pt-32 pb-20 overflow-hidden">
+    <div class="max-w-6xl mx-auto px-6">
+      <div class="grid lg:grid-cols-2 gap-12 items-center">
+        <div>
+          <div class="inline-flex items-center gap-2 bg-green-50 text-green-700 text-sm font-medium px-4 py-2 rounded-full mb-6">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+            Gyms & Fitness Studios
+          </div>
+          <h1 class="text-5xl lg:text-6xl font-extrabold text-slate-900 leading-tight mb-6">
+            Memberships on autopilot. Classes fully paid. Revenue secured.
+          </h1>
+          <p class="text-xl text-slate-600 leading-relaxed mb-8">
+            From monthly gym memberships to drop-in class payments — HitPay automates recurring billing, sells class passes online, and keeps your cash flow healthy without the admin grind.
+          </p>
+          <div class="flex flex-wrap gap-4">
+            <a href="#" class="inline-flex items-center gap-2 bg-green-600 text-white font-semibold px-6 py-3.5 rounded-xl hover:bg-green-700 transition-colors text-base">
+              Start for free
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+            </a>
+            <a href="#" class="inline-flex items-center gap-2 bg-white text-slate-800 font-semibold px-6 py-3.5 rounded-xl border border-slate-300 hover:border-slate-400 transition-colors text-base">
+              Contact sales
+            </a>
+          </div>
+          <p class="text-sm text-slate-500 mt-4">Free to sign up · No monthly fees · Pay per transaction</p>
+        </div>
+        <div class="relative lg:flex justify-end hidden">
+          <!-- Mock membership dashboard -->
+          <div class="bg-white rounded-2xl shadow-2xl border border-slate-200 p-6 w-80">
+            <div class="text-sm font-semibold text-slate-700 mb-4">Membership Overview — March 2025</div>
+            <div class="space-y-3 mb-5">
+              <div class="border border-green-400 bg-green-50 rounded-xl p-4">
+                <div class="flex justify-between items-center mb-1">
+                  <div class="font-semibold text-slate-900">Elite Unlimited</div>
+                  <span class="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded font-medium">Most popular</span>
+                </div>
+                <div class="text-slate-600 text-xs mb-2">Gym + all classes + personal training</div>
+                <div class="flex justify-between items-center">
+                  <span class="text-green-600 font-bold text-lg">S$180/mo</span>
+                  <div class="text-xs text-slate-500">112 active</div>
+                </div>
+              </div>
+              <div class="border border-slate-200 rounded-xl p-4">
+                <div class="font-semibold text-slate-900 mb-1">Basic Access</div>
+                <div class="text-slate-600 text-xs mb-2">Gym access only · 6am–10pm</div>
+                <div class="flex justify-between items-center">
+                  <span class="font-bold text-slate-700">S$88/mo</span>
+                  <div class="text-xs text-slate-500">203 active</div>
+                </div>
+              </div>
+            </div>
+            <div class="bg-green-50 rounded-xl p-4">
+              <div class="flex justify-between items-center">
+                <div>
+                  <div class="text-xs text-slate-500">Monthly recurring</div>
+                  <div class="text-2xl font-bold text-slate-900">S$37,820</div>
+                </div>
+                <div class="text-right">
+                  <div class="text-xs text-slate-500">Members</div>
+                  <div class="text-2xl font-bold text-green-600">315</div>
+                </div>
+              </div>
+              <div class="text-xs text-green-600 mt-2">↑ 14 new sign-ups this month</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Trust bar -->
+  <section class="py-14 border-b border-slate-100">
+    <div class="max-w-6xl mx-auto px-6">
+      <p class="text-center text-slate-500 text-sm font-medium uppercase tracking-widest mb-8">Works with the tools fitness businesses rely on</p>
+      <div class="flex flex-wrap justify-center items-center gap-x-10 gap-y-4">
+        <span class="text-slate-400 font-semibold text-lg">Mindbody</span>
+        <span class="text-slate-400 font-semibold text-lg">Glofox</span>
+        <span class="text-slate-400 font-semibold text-lg">Xero</span>
+        <span class="text-slate-400 font-semibold text-lg">WhatsApp</span>
+        <span class="text-slate-400 font-semibold text-lg">Zapier</span>
+        <span class="text-slate-400 font-semibold text-lg">Google Forms</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Intro -->
+  <section class="py-20">
+    <div class="max-w-3xl mx-auto px-6 text-center">
+      <h2 class="text-4xl font-bold text-slate-900 mb-5">Stop chasing membership fees. Start coaching.</h2>
+      <p class="text-xl text-slate-600 leading-relaxed">From CrossFit boxes to yoga studios to full-service gyms — HitPay handles your monthly billing, class sign-ups, and walk-in POS so you can focus on building a stronger community, not your spreadsheets.</p>
+    </div>
+  </section>
+
+  <!-- USP 1: Recurring Memberships -->
+  <section class="py-20 bg-slate-50">
+    <div class="max-w-6xl mx-auto px-6">
+      <div class="grid lg:grid-cols-2 gap-16 items-center">
+        <div>
+          <div class="text-green-600 font-semibold text-sm uppercase tracking-widest mb-4">Recurring Billing</div>
+          <h2 class="text-4xl font-bold text-slate-900 mb-5">Automate monthly memberships — never chase a payment again</h2>
+          <p class="text-lg text-slate-600 mb-8">Set up your membership plans once and HitPay charges members automatically every month — sending them receipts and retrying failed payments. You wake up to revenue, not reminders.</p>
+          <ul class="space-y-3 mb-8">
+            <li class="flex items-start gap-3">
+              <div class="w-5 h-5 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                <svg class="w-3 h-3 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+              </div>
+              <span class="text-slate-700">Monthly, quarterly, or annual billing cycles — you choose</span>
+            </li>
+            <li class="flex items-start gap-3">
+              <div class="w-5 h-5 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                <svg class="w-3 h-3 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+              </div>
+              <span class="text-slate-700">Members sign up with a single shareable link — no app download required</span>
+            </li>
+            <li class="flex items-start gap-3">
+              <div class="w-5 h-5 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                <svg class="w-3 h-3 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+              </div>
+              <span class="text-slate-700">Auto-retry failed payments with smart dunning — reduce churn</span>
+            </li>
+            <li class="flex items-start gap-3">
+              <div class="w-5 h-5 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                <svg class="w-3 h-3 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+              </div>
+              <span class="text-slate-700">Credit card, GrabPay, Apple Pay, or GIRO — members choose how they pay</span>
+            </li>
+          </ul>
+          <a href="#" class="inline-flex items-center gap-1 text-green-600 font-semibold hover:text-green-800 text-sm">
+            Learn about recurring billing <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+          </a>
+        </div>
+        <div class="flex justify-center">
+          <div class="space-y-3 w-72">
+            <div class="bg-white border border-slate-200 rounded-xl p-4 shadow-sm">
+              <div class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">Your membership plans</div>
+              <div class="space-y-2">
+                <div class="flex justify-between items-center">
+                  <span class="text-sm text-slate-700">Elite Unlimited</span>
+                  <span class="text-sm font-bold text-green-600">S$180/mo</span>
+                </div>
+                <div class="flex justify-between items-center">
+                  <span class="text-sm text-slate-700">Basic Access</span>
+                  <span class="text-sm font-bold text-green-600">S$88/mo</span>
+                </div>
+                <div class="flex justify-between items-center">
+                  <span class="text-sm text-slate-700">Classes Only (10-pack)</span>
+                  <span class="text-sm font-bold text-green-600">S$120/once</span>
+                </div>
+              </div>
+            </div>
+            <div class="bg-white border border-green-300 border-2 rounded-xl p-4 shadow-sm">
+              <div class="flex items-center gap-2 mb-2">
+                <div class="w-2 h-2 rounded-full bg-green-500"></div>
+                <span class="text-sm font-semibold text-slate-900">New member signed up</span>
+              </div>
+              <div class="text-xs text-slate-500">Marcus Tan just joined Elite Unlimited</div>
+              <div class="text-xs text-green-600 font-medium mt-1">S$180 · Renews monthly</div>
+            </div>
+            <div class="bg-slate-50 rounded-xl p-4">
+              <div class="flex justify-between">
+                <div>
+                  <div class="text-xs text-slate-500">Active members</div>
+                  <div class="text-2xl font-bold text-slate-900">315</div>
+                </div>
+                <div class="text-right">
+                  <div class="text-xs text-slate-500">Monthly recurring</div>
+                  <div class="text-xl font-bold text-green-600">S$37,820</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- USP 2: Payment Links for class sign-ups -->
+  <section class="py-20">
+    <div class="max-w-6xl mx-auto px-6">
+      <div class="grid lg:grid-cols-2 gap-16 items-center">
+        <div class="order-2 lg:order-1 flex justify-center">
+          <div class="bg-white rounded-2xl border border-slate-200 shadow-xl overflow-hidden w-72">
+            <div class="bg-green-600 p-4">
+              <div class="text-green-200 text-xs font-medium mb-1">hitpay.me/strongfit</div>
+              <div class="text-white font-bold text-xl">Book your class</div>
+              <div class="text-green-200 text-sm mt-1">HIIT Burn · Friday 7:00 AM</div>
+            </div>
+            <div class="p-4">
+              <div class="bg-green-50 rounded-xl p-3 mb-4">
+                <div class="flex justify-between text-sm">
+                  <span class="text-slate-600">HIIT Burn (60 min)</span>
+                  <span class="font-bold text-slate-900">S$35</span>
+                </div>
+                <div class="flex justify-between text-sm mt-1">
+                  <span class="text-slate-500 text-xs">6 spots remaining</span>
+                  <span class="text-xs text-green-600 font-medium">Pay to confirm spot</span>
+                </div>
+              </div>
+              <div class="text-slate-500 text-xs mb-3">Payment secures your spot. 24-hour cancellation required for refunds.</div>
+              <div class="bg-green-600 rounded-lg py-3 text-center text-white text-sm font-semibold">Pay S$35 — Lock In My Spot</div>
+              <div class="flex justify-center gap-2 mt-3">
+                <span class="payment-badge text-xs">PayNow</span>
+                <span class="payment-badge text-xs">Card</span>
+                <span class="payment-badge text-xs">GrabPay</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="order-1 lg:order-2">
+          <div class="text-green-600 font-semibold text-sm uppercase tracking-widest mb-4">Payment Links</div>
+          <h2 class="text-4xl font-bold text-slate-900 mb-5">Sell class passes and trial sessions via WhatsApp — fill every slot</h2>
+          <p class="text-lg text-slate-600 mb-8">Create a payment link for any class in 60 seconds and share it via WhatsApp, Instagram, or link-in-bio. Clients pay to lock in their spot — no more no-shows, no more empty classes.</p>
+          <ul class="space-y-3 mb-8">
+            <li class="flex items-start gap-3">
+              <div class="w-5 h-5 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                <svg class="w-3 h-3 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+              </div>
+              <span class="text-slate-700">Drop-in class links, trial passes, 10-session bundles — any product</span>
+            </li>
+            <li class="flex items-start gap-3">
+              <div class="w-5 h-5 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                <svg class="w-3 h-3 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+              </div>
+              <span class="text-slate-700">Set quantity limits so you never oversell a class slot</span>
+            </li>
+            <li class="flex items-start gap-3">
+              <div class="w-5 h-5 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                <svg class="w-3 h-3 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+              </div>
+              <span class="text-slate-700">Instant payment confirmation sent to both you and the client</span>
+            </li>
+            <li class="flex items-start gap-3">
+              <div class="w-5 h-5 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                <svg class="w-3 h-3 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+              </div>
+              <span class="text-slate-700">No website needed — works perfectly from a WhatsApp or Instagram link</span>
+            </li>
+          </ul>
+          <a href="#" class="inline-flex items-center gap-1 text-green-600 font-semibold hover:text-green-800 text-sm">
+            Try payment links <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- USP 3: POS at reception -->
+  <section class="py-20 bg-slate-50">
+    <div class="max-w-6xl mx-auto px-6">
+      <div class="grid lg:grid-cols-2 gap-16 items-center">
+        <div>
+          <div class="text-green-600 font-semibold text-sm uppercase tracking-widest mb-4">Point of Sale</div>
+          <h2 class="text-4xl font-bold text-slate-900 mb-5">Fast checkout at reception — supplements, gear, drop-ins in one tap</h2>
+          <p class="text-lg text-slate-600 mb-8">Accept walk-in payments at the front desk with HitPay POS. Whether it's a drop-in visit, protein powder, or branded gear — ring it up in seconds and accept any payment method.</p>
+          <ul class="space-y-3 mb-8">
+            <li class="flex items-start gap-3">
+              <div class="w-5 h-5 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                <svg class="w-3 h-3 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+              </div>
+              <span class="text-slate-700">Accepts PayNow QR, card tap, GrabPay, Apple Pay, Alipay+ and more</span>
+            </li>
+            <li class="flex items-start gap-3">
+              <div class="w-5 h-5 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                <svg class="w-3 h-3 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+              </div>
+              <span class="text-slate-700">Track merchandise inventory — supplements, apparel, accessories</span>
+            </li>
+            <li class="flex items-start gap-3">
+              <div class="w-5 h-5 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                <svg class="w-3 h-3 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+              </div>
+              <span class="text-slate-700">Daily revenue report split by payment method and product category</span>
+            </li>
+            <li class="flex items-start gap-3">
+              <div class="w-5 h-5 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                <svg class="w-3 h-3 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+              </div>
+              <span class="text-slate-700">Works on iPad or Android tablet — no proprietary hardware required</span>
+            </li>
+          </ul>
+          <a href="#" class="inline-flex items-center gap-1 text-green-600 font-semibold hover:text-green-800 text-sm">
+            See HitPay POS <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+          </a>
+        </div>
+        <div class="flex justify-center">
+          <!-- POS screen mock -->
+          <div class="bg-slate-900 rounded-2xl shadow-2xl p-5 w-72">
+            <div class="text-slate-400 text-xs mb-3 font-medium">HitPay POS — Front Desk</div>
+            <div class="space-y-2 mb-4">
+              <div class="flex justify-between items-center bg-slate-800 rounded-lg p-3">
+                <div>
+                  <div class="text-white text-sm font-medium">Drop-in Visit</div>
+                  <div class="text-slate-400 text-xs">Day pass</div>
+                </div>
+                <span class="text-green-400 font-bold">S$25</span>
+              </div>
+              <div class="flex justify-between items-center bg-slate-800 rounded-lg p-3">
+                <div>
+                  <div class="text-white text-sm font-medium">Whey Protein 1kg</div>
+                  <div class="text-slate-400 text-xs">Chocolate · In stock: 18</div>
+                </div>
+                <span class="text-green-400 font-bold">S$68</span>
+              </div>
+              <div class="flex justify-between items-center bg-slate-800 rounded-lg p-3">
+                <div>
+                  <div class="text-white text-sm font-medium">StrongFit Water Bottle</div>
+                  <div class="text-slate-400 text-xs">700ml · In stock: 42</div>
+                </div>
+                <span class="text-green-400 font-bold">S$28</span>
+              </div>
+            </div>
+            <div class="border-t border-slate-700 pt-3 mb-4">
+              <div class="flex justify-between text-white font-bold text-base">
+                <span>Total</span>
+                <span>S$121.00</span>
+              </div>
+            </div>
+            <div class="grid grid-cols-3 gap-2">
+              <div class="bg-green-600 rounded-lg py-2 text-center text-white text-xs font-semibold">PayNow</div>
+              <div class="bg-slate-700 rounded-lg py-2 text-center text-slate-300 text-xs">Card</div>
+              <div class="bg-slate-700 rounded-lg py-2 text-center text-slate-300 text-xs">GrabPay</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- USP 4: Online Store for merchandise & passes -->
+  <section class="py-20">
+    <div class="max-w-6xl mx-auto px-6">
+      <div class="grid lg:grid-cols-2 gap-16 items-center">
+        <div class="flex justify-center">
+          <div class="bg-white rounded-2xl border border-slate-200 shadow-xl p-6 w-80">
+            <div class="text-sm font-semibold text-slate-700 mb-4">StrongFit Online Store</div>
+            <div class="grid grid-cols-2 gap-3">
+              <div class="border border-slate-200 rounded-xl p-3 text-center">
+                <div class="text-2xl mb-1">🏋️</div>
+                <div class="text-xs font-semibold text-slate-900">10-Class Bundle</div>
+                <div class="text-xs text-green-600 font-bold mt-1">S$120</div>
+              </div>
+              <div class="border border-green-300 bg-green-50 rounded-xl p-3 text-center">
+                <div class="text-2xl mb-1">⚡</div>
+                <div class="text-xs font-semibold text-slate-900">Monthly Unlimited</div>
+                <div class="text-xs text-green-600 font-bold mt-1">S$180/mo</div>
+              </div>
+              <div class="border border-slate-200 rounded-xl p-3 text-center">
+                <div class="text-2xl mb-1">👕</div>
+                <div class="text-xs font-semibold text-slate-900">Branded Tee</div>
+                <div class="text-xs text-slate-600 font-bold mt-1">S$38</div>
+              </div>
+              <div class="border border-slate-200 rounded-xl p-3 text-center">
+                <div class="text-2xl mb-1">🧪</div>
+                <div class="text-xs font-semibold text-slate-900">Whey Protein 1kg</div>
+                <div class="text-xs text-slate-600 font-bold mt-1">S$68</div>
+              </div>
+            </div>
+            <div class="mt-4 bg-green-50 rounded-xl p-3 text-center">
+              <div class="text-xs text-slate-500">Free delivery on orders above S$80</div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="text-green-600 font-semibold text-sm uppercase tracking-widest mb-4">Online Store</div>
+          <h2 class="text-4xl font-bold text-slate-900 mb-5">Sell memberships and merch online — 24/7 revenue even when you're closed</h2>
+          <p class="text-lg text-slate-600 mb-8">Launch your own online store in minutes. Sell class passes, memberships, supplements, and branded gear. Customers can browse and pay from their phone — no app, no friction.</p>
+          <ul class="space-y-3 mb-8">
+            <li class="flex items-start gap-3">
+              <div class="w-5 h-5 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                <svg class="w-3 h-3 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+              </div>
+              <span class="text-slate-700">Built-in online store — hitpay.me/yourstudio — no extra cost</span>
+            </li>
+            <li class="flex items-start gap-3">
+              <div class="w-5 h-5 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                <svg class="w-3 h-3 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+              </div>
+              <span class="text-slate-700">Sell both digital passes (subscriptions) and physical merchandise</span>
+            </li>
+            <li class="flex items-start gap-3">
+              <div class="w-5 h-5 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                <svg class="w-3 h-3 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+              </div>
+              <span class="text-slate-700">Sync inventory across online store and in-person POS automatically</span>
+            </li>
+            <li class="flex items-start gap-3">
+              <div class="w-5 h-5 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                <svg class="w-3 h-3 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+              </div>
+              <span class="text-slate-700">Or embed checkout into your existing WordPress/Wix website via plugin</span>
+            </li>
+          </ul>
+          <a href="#" class="inline-flex items-center gap-1 text-green-600 font-semibold hover:text-green-800 text-sm">
+            Launch your online store <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Stats -->
+  <section class="py-16 bg-green-700">
+    <div class="max-w-6xl mx-auto px-6">
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+        <div class="text-center">
+          <div class="text-4xl font-extrabold text-white mb-2">15,000+</div>
+          <div class="text-green-200 text-sm">Merchants on HitPay</div>
+        </div>
+        <div class="text-center">
+          <div class="text-4xl font-extrabold text-white mb-2">$0</div>
+          <div class="text-green-200 text-sm">Monthly platform fee</div>
+        </div>
+        <div class="text-center">
+          <div class="text-4xl font-extrabold text-white mb-2">50+</div>
+          <div class="text-green-200 text-sm">Payment methods accepted</div>
+        </div>
+        <div class="text-center">
+          <div class="text-4xl font-extrabold text-white mb-2">T+1</div>
+          <div class="text-green-200 text-sm">Business day payouts</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Testimonial -->
+  <section class="py-20 bg-white">
+    <div class="max-w-3xl mx-auto px-6 text-center">
+      <svg class="w-10 h-10 text-green-200 mx-auto mb-6" fill="currentColor" viewBox="0 0 32 32"><path d="M9.352 4C4.456 7.456 1 13.12 1 19.36c0 5.088 3.072 8.064 6.624 8.064 3.36 0 5.856-2.688 5.856-5.856 0-3.168-2.208-5.472-5.088-5.472-.576 0-1.344.096-1.536.192.48-3.264 3.552-7.104 6.624-9.024L9.352 4zm16.512 0c-4.8 3.456-8.256 9.12-8.256 15.36 0 5.088 3.072 8.064 6.624 8.064 3.264 0 5.856-2.688 5.856-5.856 0-3.168-2.304-5.472-5.184-5.472-.576 0-1.248.096-1.44.192.48-3.264 3.456-7.104 6.528-9.024L25.864 4z"/></svg>
+      <p class="text-2xl text-slate-800 font-medium leading-relaxed mb-8">"We switched from manual bank transfers to HitPay for our gym memberships and it transformed our operations overnight. Renewals happen automatically, failed payments retry themselves, and we have a real-time view of our MRR. Our admin time for billing dropped by 80%."</p>
+      <div class="flex items-center justify-center gap-4">
+        <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center text-green-700 font-bold">PF</div>
+        <div class="text-left">
+          <div class="font-semibold text-slate-900">Peak Form Gym</div>
+          <div class="text-slate-500 text-sm">Fitness Studio — Singapore</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Feature grid -->
+  <section class="py-20 bg-slate-50">
+    <div class="max-w-6xl mx-auto px-6">
+      <div class="text-center mb-14">
+        <h2 class="text-3xl font-bold text-slate-900 mb-4">Built for every fitness business</h2>
+        <p class="text-slate-600 max-w-xl mx-auto">Gyms, CrossFit boxes, yoga studios, pilates, MMA clubs, personal trainers, swim schools, dance academies, and more.</p>
+      </div>
+      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div class="bg-white rounded-2xl p-6 border border-slate-200 feature-card">
+          <div class="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center mb-4">
+            <svg class="w-5 h-5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+          </div>
+          <h3 class="font-semibold text-slate-900 mb-2">Smart dunning — auto-retry</h3>
+          <p class="text-slate-600 text-sm">Failed renewal? HitPay retries automatically on the next best day to maximise collection — no awkward conversations.</p>
+        </div>
+        <div class="bg-white rounded-2xl p-6 border border-slate-200 feature-card">
+          <div class="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center mb-4">
+            <svg class="w-5 h-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+          </div>
+          <h3 class="font-semibold text-slate-900 mb-2">MAS licensed & PCI DSS</h3>
+          <p class="text-slate-600 text-sm">Regulated by MAS as a Major Payment Institution. PCI DSS Level 1 compliant. Members' card data is always protected.</p>
+        </div>
+        <div class="bg-white rounded-2xl p-6 border border-slate-200 feature-card">
+          <div class="w-10 h-10 bg-purple-100 rounded-xl flex items-center justify-center mb-4">
+            <svg class="w-5 h-5 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+          </div>
+          <h3 class="font-semibold text-slate-900 mb-2">Member self-serve portal</h3>
+          <p class="text-slate-600 text-sm">Members update their own card details, view payment history, and manage their plan — without calling you.</p>
+        </div>
+        <div class="bg-white rounded-2xl p-6 border border-slate-200 feature-card">
+          <div class="w-10 h-10 bg-amber-100 rounded-xl flex items-center justify-center mb-4">
+            <svg class="w-5 h-5 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          </div>
+          <h3 class="font-semibold text-slate-900 mb-2">Next-day payouts</h3>
+          <p class="text-slate-600 text-sm">Revenue settled to your bank account the next business day — predictable cash flow for rent and payroll.</p>
+        </div>
+        <div class="bg-white rounded-2xl p-6 border border-slate-200 feature-card">
+          <div class="w-10 h-10 bg-rose-100 rounded-xl flex items-center justify-center mb-4">
+            <svg class="w-5 h-5 text-rose-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+          </div>
+          <h3 class="font-semibold text-slate-900 mb-2">Revenue analytics dashboard</h3>
+          <p class="text-slate-600 text-sm">See MRR, churn rate, new sign-ups, and payment method breakdown in one dashboard — no spreadsheets needed.</p>
+        </div>
+        <div class="bg-white rounded-2xl p-6 border border-slate-200 feature-card">
+          <div class="w-10 h-10 bg-teal-100 rounded-xl flex items-center justify-center mb-4">
+            <svg class="w-5 h-5 text-teal-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+          </div>
+          <h3 class="font-semibold text-slate-900 mb-2">API & Zapier integration</h3>
+          <p class="text-slate-600 text-sm">Connect Mindbody or Glofox to HitPay via Zapier — automate payment collection from your booking system.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Related -->
+  <section class="py-20">
+    <div class="max-w-6xl mx-auto px-6">
+      <h2 class="text-2xl font-bold text-slate-900 mb-8">Explore more solutions</h2>
+      <div class="grid md:grid-cols-3 gap-6">
+        <a href="beauty.html" class="group bg-white border border-slate-200 rounded-2xl p-6 hover:border-green-300 hover:shadow-md transition-all">
+          <div class="text-3xl mb-4">💆</div>
+          <div class="font-semibold text-slate-900 mb-2 group-hover:text-green-600">Health, Beauty & Spas</div>
+          <div class="text-slate-600 text-sm">Collect deposits via WhatsApp and automate membership billing for wellness businesses.</div>
+          <div class="mt-4 text-green-600 font-medium text-sm flex items-center gap-1">Learn more <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg></div>
+        </a>
+        <a href="education.html" class="group bg-white border border-slate-200 rounded-2xl p-6 hover:border-green-300 hover:shadow-md transition-all">
+          <div class="text-3xl mb-4">🎓</div>
+          <div class="font-semibold text-slate-900 mb-2 group-hover:text-green-600">Education</div>
+          <div class="text-slate-600 text-sm">Automate tuition collection and class enrolment for enrichment centres and swim schools.</div>
+          <div class="mt-4 text-green-600 font-medium text-sm flex items-center gap-1">Learn more <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg></div>
+        </a>
+        <a href="retail.html" class="group bg-white border border-slate-200 rounded-2xl p-6 hover:border-green-300 hover:shadow-md transition-all">
+          <div class="text-3xl mb-4">🏪</div>
+          <div class="font-semibold text-slate-900 mb-2 group-hover:text-green-600">Retail</div>
+          <div class="text-slate-600 text-sm">Sell supplements and gear in-store and online with unified POS and inventory.</div>
+          <div class="mt-4 text-green-600 font-medium text-sm flex items-center gap-1">Learn more <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg></div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="py-20 bg-slate-50">
+    <div class="max-w-3xl mx-auto px-6">
+      <div class="text-center mb-12">
+        <h2 class="text-3xl font-bold text-slate-900 mb-4">Frequently asked questions</h2>
+        <p class="text-slate-600">Everything gyms, studios, and fitness businesses need to know about HitPay.</p>
+      </div>
+      <div class="space-y-3">
+        <details class="border border-slate-200 rounded-2xl overflow-hidden bg-white">
+          <summary class="px-6 py-5 flex items-center justify-between gap-4 cursor-pointer hover:bg-slate-50 transition-colors list-none">
+            <span class="font-semibold text-slate-900">How can gyms and fitness studios automate monthly membership billing?</span>
+            <svg class="w-5 h-5 text-slate-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+          </summary>
+          <div class="px-6 pb-5">
+            <p class="text-slate-600 leading-relaxed">With HitPay's Recurring Billing, you create your membership plans — for example, S$88/month for Basic Access — and share the sign-up link with new members. They subscribe once and HitPay automatically charges them on their renewal date each month, sends a receipt, and retries any failed payments. You see all active members, MRR, and upcoming renewals in one dashboard.</p>
+          </div>
+        </details>
+        <details class="border border-slate-200 rounded-2xl overflow-hidden bg-white">
+          <summary class="px-6 py-5 flex items-center justify-between gap-4 cursor-pointer hover:bg-slate-50 transition-colors list-none">
+            <span class="font-semibold text-slate-900">What happens if a member's monthly payment fails?</span>
+            <svg class="w-5 h-5 text-slate-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+          </summary>
+          <div class="px-6 pb-5">
+            <p class="text-slate-600 leading-relaxed">HitPay automatically retries failed payments using smart dunning logic — attempting the charge again at optimal intervals to maximise collection rate without manual effort. Members receive an automated notification to update their payment method. You can see all failed attempts, retries, and outcomes in your dashboard without any manual follow-up.</p>
+          </div>
+        </details>
+        <details class="border border-slate-200 rounded-2xl overflow-hidden bg-white">
+          <summary class="px-6 py-5 flex items-center justify-between gap-4 cursor-pointer hover:bg-slate-50 transition-colors list-none">
+            <span class="font-semibold text-slate-900">Can I sell drop-in class passes and trial sessions via WhatsApp or Instagram?</span>
+            <svg class="w-5 h-5 text-slate-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+          </summary>
+          <div class="px-6 pb-5">
+            <p class="text-slate-600 leading-relaxed">Yes. HitPay Payment Links let you create a class-specific link in under 60 seconds and share it via WhatsApp, Instagram Stories, or link-in-bio. Clients pay to lock in their spot and you receive instant confirmation. You can set a quantity limit on each link to prevent overbooking — the link automatically closes when all spots are filled.</p>
+          </div>
+        </details>
+        <details class="border border-slate-200 rounded-2xl overflow-hidden bg-white">
+          <summary class="px-6 py-5 flex items-center justify-between gap-4 cursor-pointer hover:bg-slate-50 transition-colors list-none">
+            <span class="font-semibold text-slate-900">Can members manage or cancel their own gym membership?</span>
+            <svg class="w-5 h-5 text-slate-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+          </summary>
+          <div class="px-6 pb-5">
+            <p class="text-slate-600 leading-relaxed">Yes. HitPay provides a member self-service portal where members can update their payment method, view billing history, pause, or cancel their membership — without needing to call or WhatsApp you. This reduces admin time significantly and improves member experience, particularly for members who travel or take seasonal breaks.</p>
+          </div>
+        </details>
+        <details class="border border-slate-200 rounded-2xl overflow-hidden bg-white">
+          <summary class="px-6 py-5 flex items-center justify-between gap-4 cursor-pointer hover:bg-slate-50 transition-colors list-none">
+            <span class="font-semibold text-slate-900">Is HitPay suitable for small yoga, pilates, or CrossFit studios with under 50 members?</span>
+            <svg class="w-5 h-5 text-slate-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+          </summary>
+          <div class="px-6 pb-5">
+            <p class="text-slate-600 leading-relaxed">Absolutely. HitPay has no monthly platform fees and no minimum member count — studios with 10 members or 500 members pay the same low per-transaction rate. This makes HitPay accessible from day one, even for studios that are just getting started. Many boutique yoga and pilates studios use HitPay as their primary billing system.</p>
+          </div>
+        </details>
+        <details class="border border-slate-200 rounded-2xl overflow-hidden bg-white">
+          <summary class="px-6 py-5 flex items-center justify-between gap-4 cursor-pointer hover:bg-slate-50 transition-colors list-none">
+            <span class="font-semibold text-slate-900">I'm currently collecting gym fees manually via PayNow every month — how do I automate this?</span>
+            <svg class="w-5 h-5 text-slate-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+          </summary>
+          <div class="px-6 pb-5">
+            <p class="text-slate-600 leading-relaxed">Set up HitPay Recurring Billing once: create your membership plan, send each member their personal subscription sign-up link, and they authorise the first payment. Every subsequent month, HitPay charges them automatically and sends a receipt — you don't touch anything. Most gym owners complete the migration of all members within a week. After that, you never manually check your bank app for gym fee transfers again.</p>
+          </div>
+        </details>
+        <details class="border border-slate-200 rounded-2xl overflow-hidden bg-white">
+          <summary class="px-6 py-5 flex items-center justify-between gap-4 cursor-pointer hover:bg-slate-50 transition-colors list-none">
+            <span class="font-semibold text-slate-900">Can I offer new members a free trial period or discounted first month before charging full price?</span>
+            <svg class="w-5 h-5 text-slate-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+          </summary>
+          <div class="px-6 pb-5">
+            <p class="text-slate-600 leading-relaxed">Yes. HitPay supports trial periods and introductory pricing. You can create a separate "First Month" plan at a reduced rate and then migrate the member to your standard plan after the trial. Alternatively, set up a plan with a discounted first charge and standard recurring amount from the second charge onward. This is a common strategy for CrossFit boxes and yoga studios running "first week free" or "first month at 50%" promotions.</p>
+          </div>
+        </details>
+        <details class="border border-slate-200 rounded-2xl overflow-hidden bg-white">
+          <summary class="px-6 py-5 flex items-center justify-between gap-4 cursor-pointer hover:bg-slate-50 transition-colors list-none">
+            <span class="font-semibold text-slate-900">Does HitPay integrate with Mindbody or Glofox gym management software?</span>
+            <svg class="w-5 h-5 text-slate-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+          </summary>
+          <div class="px-6 pb-5">
+            <p class="text-slate-600 leading-relaxed">HitPay connects to Mindbody, Glofox, and other gym management platforms via Zapier — you can set up automations where a new member in your booking system triggers a HitPay subscription link being sent to them automatically. For deeper integrations, HitPay's REST API allows custom connections to any gym management system. Contact the HitPay sales team for enterprise integration support and implementation guidance.</p>
+          </div>
+        </details>
+        <details class="border border-slate-200 rounded-2xl overflow-hidden bg-white">
+          <summary class="px-6 py-5 flex items-center justify-between gap-4 cursor-pointer hover:bg-slate-50 transition-colors list-none">
+            <span class="font-semibold text-slate-900">Can I sell personal training packages and supplement bundles from the same HitPay account?</span>
+            <svg class="w-5 h-5 text-slate-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+          </summary>
+          <div class="px-6 pb-5">
+            <p class="text-slate-600 leading-relaxed">Yes. Your HitPay account handles both recurring memberships and one-off product sales from the same dashboard. Your Online Store can list PT session packages, 10-class bundles, protein supplements, branded apparel, and accessories side by side. Customers can purchase any product in a single checkout, and all revenue — whether from memberships or merchandise — is tracked in one unified report.</p>
+          </div>
+        </details>
+        <details class="border border-slate-200 rounded-2xl overflow-hidden bg-white">
+          <summary class="px-6 py-5 flex items-center justify-between gap-4 cursor-pointer hover:bg-slate-50 transition-colors list-none">
+            <span class="font-semibold text-slate-900">How long does it take to set up HitPay and migrate existing gym members to auto-billing?</span>
+            <svg class="w-5 h-5 text-slate-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+          </summary>
+          <div class="px-6 pb-5">
+            <p class="text-slate-600 leading-relaxed">Account setup typically takes 1–2 business days for verification. Once approved, you create your membership plans in under 10 minutes and send each existing member a subscription sign-up link via WhatsApp. Most members complete the sign-up in under 2 minutes. For a gym with 100 members, the full migration can realistically be completed within a week — and often much faster if you bulk-send links with a simple WhatsApp broadcast message.</p>
+          </div>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="py-20 gradient-cta">
+    <div class="max-w-3xl mx-auto px-6 text-center">
+      <h2 class="text-4xl font-extrabold text-white mb-5">Ready to put your gym billing on autopilot?</h2>
+      <p class="text-green-100 text-xl mb-10">Join 15,000+ businesses growing with HitPay. Free to start — no monthly fees, no setup fees.</p>
+      <div class="flex flex-wrap justify-center gap-4">
+        <a href="#" class="bg-white text-green-700 font-semibold px-8 py-4 rounded-xl hover:bg-green-50 transition-colors text-base">Start for free</a>
+        <a href="#" class="bg-white/10 text-white font-semibold px-8 py-4 rounded-xl border border-white/30 hover:bg-white/20 transition-colors text-base">Talk to sales</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="bg-slate-900 text-slate-400 py-12">
+    <div class="max-w-6xl mx-auto px-6">
+      <div class="grid md:grid-cols-5 gap-8 mb-12">
+        <div class="md:col-span-2">
+          <div class="flex items-center gap-2 mb-4">
+            <div class="w-7 h-7 bg-green-600 rounded-lg flex items-center justify-center"><span class="text-white font-bold text-xs">H</span></div>
+            <span class="font-bold text-white">HitPay</span>
+          </div>
+          <p class="text-sm text-slate-500 leading-relaxed">All-in-one payment platform for growing businesses in Southeast Asia and beyond.</p>
+        </div>
+        <div>
+          <div class="font-semibold text-slate-300 text-sm mb-3">Products</div>
+          <ul class="space-y-2 text-sm"><li><a href="#" class="hover:text-slate-300">Recurring Billing</a></li><li><a href="#" class="hover:text-slate-300">Payment Links</a></li><li><a href="#" class="hover:text-slate-300">Point of Sale</a></li><li><a href="#" class="hover:text-slate-300">Online Store</a></li></ul>
+        </div>
+        <div>
+          <div class="font-semibold text-slate-300 text-sm mb-3">Solutions</div>
+          <ul class="space-y-2 text-sm"><li><a href="beauty.html" class="hover:text-slate-300">Beauty & Spas</a></li><li><a href="education.html" class="hover:text-slate-300">Education</a></li><li><a href="retail.html" class="hover:text-slate-300">Retail</a></li><li><a href="events.html" class="hover:text-slate-300">Events</a></li></ul>
+        </div>
+        <div>
+          <div class="font-semibold text-slate-300 text-sm mb-3">Company</div>
+          <ul class="space-y-2 text-sm"><li><a href="#" class="hover:text-slate-300">About</a></li><li><a href="#" class="hover:text-slate-300">Blog</a></li><li><a href="#" class="hover:text-slate-300">Pricing</a></li><li><a href="#" class="hover:text-slate-300">Contact</a></li></ul>
+        </div>
+      </div>
+      <div class="border-t border-slate-800 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+        <div class="text-sm text-slate-600">© 2025 HitPay Payment Solutions Pte. Ltd. All rights reserved.</div>
+        <div class="flex gap-6 text-sm text-slate-600">
+          <a href="#" class="hover:text-slate-400">Privacy</a>
+          <a href="#" class="hover:text-slate-400">Terms</a>
+          <a href="#" class="hover:text-slate-400">Security</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>

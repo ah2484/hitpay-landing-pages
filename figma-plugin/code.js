@@ -57,6 +57,28 @@ const C = {
   orange100:  { r: 1.000, g: 0.933, b: 0.878 },
   orange600:  { r: 0.914, g: 0.412, b: 0.051 },
   pink100:    { r: 1.000, g: 0.878, b: 0.933 },
+  // sky (travel)
+  sky50:    { r: 0.941, g: 0.976, b: 1.000 },
+  sky100:   { r: 0.878, g: 0.949, b: 0.996 },
+  sky600:   { r: 0.012, g: 0.518, b: 0.784 },
+  sky700:   { r: 0.012, g: 0.412, b: 0.631 },
+  sky900:   { r: 0.047, g: 0.290, b: 0.431 },
+  // rose (beauty)
+  rose50:   { r: 1.000, g: 0.945, b: 0.949 },
+  rose100:  { r: 1.000, g: 0.894, b: 0.902 },
+  rose600:  { r: 0.882, g: 0.114, b: 0.282 },
+  rose700:  { r: 0.745, g: 0.071, b: 0.235 },
+  rose900:  { r: 0.533, g: 0.075, b: 0.216 },
+  // amber extras (furniture)
+  amber50:  { r: 1.000, g: 0.984, b: 0.922 },
+  amber600: { r: 0.851, g: 0.467, b: 0.024 },
+  amber900: { r: 0.471, g: 0.208, b: 0.059 },
+  // orange extras (restaurants)
+  orange50:  { r: 1.000, g: 0.969, b: 0.945 },
+  orange900: { r: 0.490, g: 0.196, b: 0.020 },
+  // blue extras (education, wholesale)
+  blue50:   { r: 0.937, g: 0.957, b: 0.996 },
+  blue900:  { r: 0.118, g: 0.216, b: 0.604 },
 };
 
 // ── FONT WEIGHTS ────────────────────────────────────────────
@@ -389,7 +411,7 @@ function mkStats(stats, bg, textColor, subColor) {
 }
 
 /** Testimonial section — 380px */
-function mkTestimonial(quote, name, company, accent) {
+function mkTestimonial(quote, name, company, accent, lightBg) {
   const sec = mkFrame('Testimonial', 1440, 380, C.white);
 
   // Quote mark
@@ -404,7 +426,7 @@ function mkTestimonial(quote, name, company, accent) {
   sec.appendChild(quoteText);
 
   // Avatar
-  const avatar = mkFrame('Avatar', 48, 48, accent === C.indigo600 ? C.indigo100 : accent === C.emerald600 ? C.emerald100 : C.violet100, 24);
+  const avatar = mkFrame('Avatar', 48, 48, lightBg || (accent === C.indigo600 ? C.indigo100 : accent === C.emerald600 ? C.emerald100 : C.violet100), 24);
   const initials = mkText(name.split(' ').map(n => n[0]).join(''), 16, W.bold, accent, 'CENTER');
   initials.x = 14; initials.y = 12;
   avatar.appendChild(initials);
@@ -615,6 +637,58 @@ function mkFooter(accent, footerProducts, footerSolutions) {
   const links = mkText('Privacy   Terms   Security', 13, W.regular, C.slate600, 'RIGHT', 280);
   links.x = 1016; links.y = 250;
   sec.appendChild(links);
+
+  return sec;
+}
+
+/** FAQ accordion section — all items expanded to show Q + A */
+function mkFAQ(items, accent) {
+  const itemH = 136; // question (~48px 2 lines) + gap + answer (~44px 2 lines) + padding
+  const topH  = 96;
+  const h = topH + items.length * itemH + 40;
+  const sec = mkFrame('FAQ', 1440, h, C.white);
+
+  const h2 = mkText('Frequently Asked Questions', 30, W.bold, C.slate900, 'CENTER', 700);
+  h2.x = 370; h2.y = 36;
+  sec.appendChild(h2);
+
+  // Top rule
+  const topRule = mkRect(752, 1, C.slate200);
+  topRule.x = 344; topRule.y = topH;
+  sec.appendChild(topRule);
+
+  items.forEach((item, i) => {
+    const y = topH + i * itemH;
+    const q = typeof item === 'string' ? item : item.q;
+    const a = typeof item === 'string' ? '' : item.a;
+
+    // Question text
+    const qText = mkText(q, 15, W.semibold, C.slate900, 'LEFT', 640);
+    qText.x = 344; qText.y = y + 18;
+    sec.appendChild(qText);
+
+    // Collapse indicator (− = open/expanded)
+    const iconBg = mkRect(28, 28, accent, 6);
+    iconBg.opacity = 0.12;
+    iconBg.x = 1040; iconBg.y = y + 16;
+    sec.appendChild(iconBg);
+    const minus = mkText('−', 18, W.bold, accent, 'CENTER', 28);
+    minus.x = 1040; minus.y = y + 18;
+    sec.appendChild(minus);
+
+    // Answer text
+    if (a) {
+      const aText = mkText(a, 14, W.regular, C.slate500, 'LEFT', 640);
+      aText.lineHeight = { value: 22, unit: 'PIXELS' };
+      aText.x = 344; aText.y = y + 60;
+      sec.appendChild(aText);
+    }
+
+    // Row divider
+    const rule = mkRect(752, 1, C.slate100);
+    rule.x = 344; rule.y = y + itemH - 1;
+    sec.appendChild(rule);
+  });
 
   return sec;
 }
@@ -1705,8 +1779,8 @@ function mkHeroLandingPlain() {
 
 // ── PAGE BUILDERS ────────────────────────────────────────────
 
-function buildEcommerce() {
-  const page = new Page('E-commerce Landing Page', 0);
+function buildEcommerce(xOffset = 0) {
+  const page = new Page('E-commerce Landing Page', xOffset);
   const ac = C.indigo600;
 
   page.add(mkNavbar(ac), 64);
@@ -1843,8 +1917,8 @@ function buildEcommerce() {
   return page.f;
 }
 
-function buildRetail() {
-  const page = new Page('Retail Landing Page', 1540);
+function buildRetail(xOffset = 1540) {
+  const page = new Page('Retail Landing Page', xOffset);
   const ac = C.emerald600;
 
   page.add(mkNavbar(ac), 64);
@@ -2033,8 +2107,8 @@ function buildRetail() {
   return page.f;
 }
 
-function buildNonprofits() {
-  const page = new Page('Nonprofits Landing Page', 3080);
+function buildNonprofits(xOffset = 3080) {
+  const page = new Page('Nonprofits Landing Page', xOffset);
   const ac = C.violet600;
 
   page.add(mkNavbar(ac), 64);
@@ -2173,8 +2247,8 @@ function buildNonprofits() {
   return page.f;
 }
 
-function buildLanding() {
-  const page = new Page('General Landing Page (SEO/AEO)', 4620);
+function buildLanding(xOffset = 4620) {
+  const page = new Page('General Landing Page (SEO/AEO)', xOffset);
   const ac = C.indigo600;
 
   page.add(mkNavbar(ac), 64);
@@ -2318,8 +2392,8 @@ function buildLanding() {
   return page.f;
 }
 
-function buildLandingPlainInspired() {
-  const page = new Page('General Landing v2 (Plain-inspired)', 6160);
+function buildLandingPlainInspired(xOffset = 6160) {
+  const page = new Page('General Landing v2 (Plain-inspired)', xOffset);
   const ac = C.indigo600;
 
   page.add(mkNavbar(ac), 64);
@@ -2559,25 +2633,1148 @@ function buildLandingPlainInspired() {
   return page.f;
 }
 
+// ── GENERIC INDUSTRY HERO ────────────────────────────────────
+
+function mkHeroIndustry(cfg, ac) {
+  const sec = mkFrame('Hero', 1440, 560, cfg.heroBg);
+
+  const badge = mkPill(cfg.badge, cfg.pillBg, ac, 16, 8, 100);
+  badge.x = 144; badge.y = 80;
+  sec.appendChild(badge);
+
+  const h1 = mkText(cfg.heroH1, 56, W.extrabold, C.slate900, 'LEFT', 560);
+  h1.lineHeight = { value: 64, unit: 'PIXELS' };
+  h1.x = 144; h1.y = 126;
+  sec.appendChild(h1);
+
+  const sub = mkText(cfg.heroSub, 20, W.regular, C.slate600, 'LEFT', 540);
+  sub.lineHeight = { value: 30, unit: 'PIXELS' };
+  sub.x = 144; sub.y = 290;
+  sec.appendChild(sub);
+
+  const b1 = mkBtn('Start for free', ac, C.white, 24, 14, 12);
+  b1.x = 144; b1.y = 390;
+  sec.appendChild(b1);
+
+  const b2 = mkBtn('Contact sales', null, C.slate800, 24, 14, 12, true);
+  b2.x = 296; b2.y = 390;
+  sec.appendChild(b2);
+
+  const fine = mkText('Free to sign up · No setup fees · Pay per transaction', 14, W.regular, C.slate500);
+  fine.x = 144; fine.y = 444;
+  sec.appendChild(fine);
+
+  const mock = cfg.heroMockFn();
+  mock.x = cfg.heroMockX !== undefined ? cfg.heroMockX : 900;
+  mock.y = cfg.heroMockY !== undefined ? cfg.heroMockY : 130;
+  sec.appendChild(mock);
+
+  return sec;
+}
+
+// ── GENERIC INDUSTRY PAGE BUILDER ────────────────────────────
+
+function buildIndustry(cfg, xOffset) {
+  const page = new Page(cfg.name, xOffset);
+  const ac = cfg.accent;
+
+  page.add(mkNavbar(ac), 64);
+  page.add(mkHeroIndustry(cfg, ac), 560);
+  page.add(mkTrustBar(cfg.trustTitle, cfg.trustItems), 120);
+  page.add(mkIntro(cfg.introTitle, cfg.introSub), 240);
+
+  cfg.features.forEach((f, i) => {
+    page.add(mkFeature({
+      label: f.label,
+      h2: f.h2,
+      p: f.p,
+      bullets: f.bullets,
+      mockUI: f.mockFn(),
+      bg: i % 2 === 0 ? C.slate50 : C.white,
+      textSide: i % 2 === 0 ? 'left' : 'right',
+      accent: ac,
+    }), 480);
+  });
+
+  page.add(mkStats(
+    cfg.stats,
+    cfg.statsBg || C.slate900,
+    C.white,
+    cfg.statsAccent || ac
+  ), 192);
+
+  page.add(mkTestimonial(
+    cfg.testimonial.quote,
+    cfg.testimonial.name,
+    cfg.testimonial.role,
+    ac,
+    cfg.testimonial.lightBg
+  ), 380);
+
+  page.add(mkGrid(cfg.gridTitle, cfg.gridSub, cfg.gridItems), 660);
+  page.add(mkRelated('Explore more solutions', cfg.related, ac), 380);
+  if (cfg.faqItems && cfg.faqItems.length > 0) {
+    page.add(mkFAQ(cfg.faqItems, ac), 96 + cfg.faqItems.length * 136 + 40);
+  }
+  page.add(mkCTA(cfg.ctaTitle, cfg.ctaSub, cfg.ctaBtn1, cfg.ctaBtn2, ac), 300);
+  page.add(mkFooter(ac, cfg.footerProducts, cfg.footerIndustries), 280);
+
+  return page.f;
+}
+
+// ── INDUSTRY CONFIGS ─────────────────────────────────────────
+
+const INDUSTRY = {};
+
+INDUSTRY.restaurants = {
+  name: 'Restaurants — HitPay',
+  accent: C.orange600,
+  heroBg: C.orange50,
+  pillBg: C.orange50,
+  badge: 'Restaurants & F&B',
+  heroH1: 'Payments built for\nrestaurants and F&B',
+  heroSub: 'Accept PayNow, cards, and digital wallets at every table. QR ordering, tableside payments, and delivery integrations — all in one platform, zero monthly fees.',
+  heroMockFn: () => mockQR(),
+  heroMockX: 920, heroMockY: 150,
+  trustTitle: 'TRUSTED BY F&B BUSINESSES ACROSS SINGAPORE',
+  trustItems: ['Cafes', 'Full-Service Restaurants', 'Cloud Kitchens', 'Hawker Stalls', 'Bubble Tea', 'Catering'],
+  introTitle: 'From dine-in to delivery, one payment platform',
+  introSub: 'HitPay powers the full F&B payment stack — table QR codes, card terminals, online ordering, and delivery integration — all from one dashboard, with next-day payouts.',
+  features: [
+    {
+      label: 'QR Ordering',
+      h2: 'Let customers scan, order, and pay — no app needed',
+      p: 'Place a HitPay QR code on every table. Customers scan and pay with PayNow, cards, or digital wallets — without waiting for the bill. Reduce service staff workload and turn tables faster.',
+      bullets: [
+        'Static QR codes — no app download required',
+        'PayNow, GrabPay, cards, and more accepted',
+        'QR codes print-ready for tables, counters, and walls',
+        'All payments tracked in real time on your dashboard',
+      ],
+      mockFn: () => mockQR(),
+    },
+    {
+      label: 'Card Payments',
+      h2: 'Accept every payment method your customers carry',
+      p: 'From contactless cards and PayNow to GrabPay, ShopeePay, and Apple Pay — HitPay ensures you never miss a sale. Deploy card terminals at your counter or use Tap to Pay on your phone.',
+      bullets: [
+        'Visa, Mastercard, Amex, and contactless NFC',
+        'PayNow QR displayed on card terminal screen',
+        'GrabPay, ShopeePay, FavePay, and major e-wallets',
+        'PCI DSS compliant — secure for high-volume restaurants',
+      ],
+      mockFn: () => mockCheckout(),
+    },
+    {
+      label: 'Delivery & Takeaway',
+      h2: 'Take orders and collect payment before cooking starts',
+      p: 'Send a payment link over WhatsApp or Instagram DM and collect payment before the order is prepared. Perfect for cloud kitchens, catering operators, and high-demand weekends.',
+      bullets: [
+        'Create a payment link in under 60 seconds',
+        'Pre-payment before food preparation begins',
+        'Works on mobile — no checkout friction for customers',
+        'All orders tracked alongside your dine-in payments',
+      ],
+      mockFn: () => mockPaymentLink(),
+    },
+    {
+      label: 'Reporting',
+      h2: 'Know your best sellers and busiest hours',
+      p: "HitPay's dashboard gives you a real-time view of revenue by payment method, day, and channel. Know when your peak hours are and use the data to staff and stock accordingly.",
+      bullets: [
+        'Daily, weekly, and monthly revenue summaries',
+        'Revenue breakdown by payment type and channel',
+        'Export reports to Excel for accounting',
+        'Next business day payouts — reliable cash flow',
+      ],
+      mockFn: () => mockPOSDashboard(),
+    },
+  ],
+  stats: [
+    { value: 'S$0',  label: 'Monthly platform fees' },
+    { value: '<60s', label: 'QR code setup' },
+    { value: 'T+1',  label: 'Business day payouts' },
+    { value: '700+', label: 'Payment methods' },
+  ],
+  statsBg: C.slate900, statsAccent: C.orange600,
+  testimonial: {
+    quote: 'We deployed HitPay QR codes on all 20 tables and customers now pay themselves. Our average table turnover time dropped by 8 minutes and our cashier queue disappeared entirely.',
+    name: 'Wei Jie Tan',
+    role: 'Operations Manager, SOHO Kitchen & Bar — Singapore',
+    lightBg: C.orange100,
+  },
+  gridTitle: 'Everything your F&B business needs',
+  gridSub: 'HitPay covers the full payment lifecycle for restaurants, cafes, and cloud kitchens.',
+  gridItems: [
+    { title: 'Fast payouts',       desc: 'Receive your revenue the next business day. Essential for F&B businesses managing daily cash flow.' },
+    { title: 'Card terminals',     desc: 'Deploy HitPay card terminals at your counter. Accepts cards, PayNow, GrabPay, and contactless NFC.' },
+    { title: 'Payment Soundbox',   desc: 'Audio and visual payment confirmation. Your staff always knows when a transaction goes through.' },
+    { title: 'Tax receipts',       desc: 'Auto-generate GST-compliant receipts for dine-in and delivery orders. Email to customers automatically.' },
+    { title: 'Tap to Pay',         desc: 'Take tableside payments on iPhone or Android — no card terminal hardware required.' },
+    { title: 'Multi-outlet',       desc: 'Manage all your outlets from one HitPay account. Unified reporting, single payout stream.' },
+  ],
+  related: [
+    { emoji: '🛒', title: 'E-commerce', desc: 'Sell vouchers, gift sets, or food products online.' },
+    { emoji: '🏪', title: 'Retail',     desc: 'Unified POS and online payments for physical retail.' },
+    { emoji: '🎪', title: 'Events',     desc: 'Collect payments for private dining and catering events.' },
+  ],
+  faqItems: [
+    { q: 'Does HitPay work with food delivery platforms like GrabFood or Foodpanda?', a: "HitPay doesn't integrate directly with delivery apps, but payment links via WhatsApp let you collect pre-orders before preparation begins." },
+    { q: 'Can I accept PayNow at my restaurant without a card terminal?', a: 'Yes — print a static PayNow QR from your dashboard and display it on tables or counters. No terminal hardware required.' },
+    { q: 'Is there a setup fee or monthly cost to use HitPay for my F&B business?', a: 'No. HitPay has zero setup fees and no monthly subscription — you only pay a small per-transaction fee when a payment is received.' },
+    { q: 'How do I set up a QR code for my restaurant tables?', a: 'Log in to your HitPay dashboard, generate a payment QR, and print it for each table. The entire process takes under 5 minutes.' },
+    { q: 'Can HitPay replace my existing NETS terminal at the counter?', a: 'Yes. HitPay terminals accept NETS, Visa, Mastercard, PayNow, GrabPay, and NFC wallets — replacing multiple devices with one.' },
+    { q: 'How long does it take to receive payouts from restaurant sales?', a: 'HitPay pays out the next business day (T+1). Revenue collected today arrives in your bank account the following business day.' },
+    { q: 'My restaurant has multiple outlets — can I manage them under one account?', a: 'Yes. HitPay supports multi-outlet management from a single account with unified revenue reporting across all locations.' },
+    { q: 'What happens if a customer disputes a payment made at my restaurant?', a: "HitPay's support team guides you through the chargeback process. All transaction records are stored in your dashboard for resolution." },
+  ],
+  ctaTitle: 'Ready to modernise your F&B payments?',
+  ctaSub: 'Join hundreds of Singapore restaurants and cafes already using HitPay. Free to start, no credit card needed.',
+  ctaBtn1: 'Start for free',
+  ctaBtn2: 'Request a demo',
+  footerProducts: ['QR Payments', 'Card Terminals', 'Payment Links', 'Soundbox'],
+  footerIndustries: ['Restaurants', 'Retail', 'E-commerce', 'Nonprofits'],
+};
+
+INDUSTRY.travel = {
+  name: 'Travel & Tourism — HitPay',
+  accent: C.sky600,
+  heroBg: C.sky50,
+  pillBg: C.sky50,
+  badge: 'Travel & Tourism',
+  heroH1: 'Collect tour deposits and\nbookings without the hassle',
+  heroSub: 'Accept PayNow, cards, Alipay+, and cross-border payments. Send instant payment links for tour bookings and deposits — no website required.',
+  heroMockFn: () => mockPaymentLink(),
+  heroMockX: 900, heroMockY: 130,
+  trustTitle: 'TRUSTED BY TRAVEL BUSINESSES ACROSS SOUTHEAST ASIA',
+  trustItems: ['Tour Operators', 'Travel Agencies', 'Adventure Sports', 'Cultural Tours', 'Cruise Packages', 'Visa Services'],
+  introTitle: 'Every booking method your customers prefer',
+  introSub: 'Whether your customers book via WhatsApp, your website, or Instagram — HitPay lets you collect deposits and full payments instantly, in any currency.',
+  features: [
+    {
+      label: 'Booking Payments',
+      h2: 'Send payment links for deposits in under a minute',
+      p: "No website? No problem. Create a payment link for any tour package or deposit amount and share it via WhatsApp, email, or Instagram. Customers pay instantly with PayNow, cards, or GrabPay.",
+      bullets: [
+        'Custom amount payment links — no coding needed',
+        'Share via WhatsApp, email, or Instagram',
+        'All major local and international payment methods',
+        'Payment confirmation sent automatically to customer',
+      ],
+      mockFn: () => mockPaymentLink(),
+    },
+    {
+      label: 'Revenue Dashboard',
+      h2: 'Track bookings and revenue across all tour packages',
+      p: 'See every payment, every tour, and every customer in one dashboard. Know which packages are your best sellers, monitor cash flow, and get paid the next business day.',
+      bullets: [
+        'Real-time dashboard by package, channel, and date',
+        'Revenue trend charts — week by week',
+        'All payment methods shown in one view',
+        'Next business day payouts (T+1)',
+      ],
+      mockFn: () => mockDashboard(),
+    },
+    {
+      label: 'Recurring Packages',
+      h2: 'Sell travel packages and memberships on subscription',
+      p: 'Offer tour memberships, monthly adventure packages, or corporate travel plans with automatic recurring billing. HitPay handles the charging, reminders, and retries automatically.',
+      bullets: [
+        'Monthly, quarterly, and annual billing',
+        'Automated payment reminders before charge date',
+        'Smart retries for failed payments',
+        'Self-service portal for customers to manage plans',
+      ],
+      mockFn: () => mockSubscriptions(),
+    },
+    {
+      label: 'Corporate Invoicing',
+      h2: 'Invoice corporate clients and travel agents professionally',
+      p: 'Send branded invoices with payment links embedded. Track which invoices are paid, overdue, or pending. Automated reminders do the follow-up for you.',
+      bullets: [
+        'Branded invoice templates with your logo',
+        'Online payment link embedded in every invoice',
+        'Automated reminders before and after due date',
+        'Full payment history for accounting and audits',
+      ],
+      mockFn: () => mockInvoice(),
+    },
+  ],
+  stats: [
+    { value: '11',   label: 'Markets served' },
+    { value: 'S$0',  label: 'Monthly platform fees' },
+    { value: 'T+1',  label: 'Business day payouts' },
+    { value: '700+', label: 'Payment methods accepted' },
+  ],
+  statsBg: C.slate900, statsAccent: C.sky600,
+  testimonial: {
+    quote: 'We used to chase clients for bank transfers for weeks. With HitPay payment links, tour deposits are paid within hours of sending. Our cash flow has never been more predictable.',
+    name: 'Sarah Lim',
+    role: 'Director, Discover Asia Tours — Singapore',
+    lightBg: C.sky100,
+  },
+  gridTitle: 'Everything your travel business needs',
+  gridSub: 'HitPay provides a complete payment stack for tour operators, travel agencies, and adventure companies.',
+  gridItems: [
+    { title: 'Cross-border payments', desc: 'Accept payments from customers across Southeast Asia, including Alipay+, WeChat Pay, and international cards.' },
+    { title: 'Multi-currency',        desc: 'Display prices and accept payments in multiple currencies. HitPay handles conversion transparently.' },
+    { title: 'Instant QR codes',      desc: 'Generate QR codes for on-the-spot payments at travel fairs, shows, and roadshows.' },
+    { title: 'Payment links',         desc: 'Share via WhatsApp or email. No website or app required for your customers to pay.' },
+    { title: 'Automated receipts',    desc: 'Every booking payment triggers an automatic receipt email to the customer.' },
+    { title: 'MAS licensed',          desc: "HitPay is licensed by the Monetary Authority of Singapore — your clients' payments are safe and regulated." },
+  ],
+  related: [
+    { emoji: '🎪', title: 'Events',    desc: 'Collect deposits and ticket payments for events and experiences.' },
+    { emoji: '🏪', title: 'Retail',    desc: 'Sell travel merchandise, gear, and accessories in-store and online.' },
+    { emoji: '📦', title: 'Wholesale', desc: 'Invoice travel agents and B2B clients professionally.' },
+  ],
+  faqItems: [
+    { q: 'Does HitPay support Alipay+ and WeChat Pay for Chinese visitors?', a: 'Yes. HitPay supports Alipay+ and WeChat Pay, allowing you to accept payments from Chinese tourists and international visitors.' },
+    { q: 'Can I accept payments in foreign currencies from international clients?', a: 'Yes. HitPay supports multi-currency payments across 100+ currencies. Funds are settled in SGD the next business day.' },
+    { q: 'How do I collect a tour deposit without a website?', a: 'Create a payment link in your HitPay dashboard in under 60 seconds and share it via WhatsApp, email, or Instagram.' },
+    { q: 'Is HitPay suitable for solo travel guides and freelance operators?', a: 'Yes. HitPay accepts sole proprietors and freelancers. You can sign up with your personal NRIC and start accepting payments immediately.' },
+    { q: 'What documents do I need to sign up for HitPay as a travel agency?', a: 'You will need your ACRA business registration, director NRIC, and bank account details. Approval typically takes 1–3 business days.' },
+    { q: 'Can I issue official receipts or invoices for tour payments through HitPay?', a: 'Yes. HitPay auto-generates receipts for every payment and supports branded invoices with your logo and itemised tour details.' },
+    { q: 'What happens if a customer requests a refund for a cancelled tour?', a: 'You can issue full or partial refunds directly from your HitPay dashboard. Refunds are processed within 5–10 business days.' },
+    { q: 'How long does it take to set up HitPay and start collecting payments?', a: 'Approval takes 1–3 business days. After that, you can generate a payment link and start collecting in under 5 minutes.' },
+  ],
+  ctaTitle: 'Start collecting tour payments today',
+  ctaSub: 'No setup fees, no monthly subscription. HitPay is free to start — pay only per transaction.',
+  ctaBtn1: 'Start for free',
+  ctaBtn2: 'Contact sales',
+  footerProducts: ['Payment Links', 'QR Payments', 'Invoicing', 'Subscriptions'],
+  footerIndustries: ['Travel', 'Events', 'Retail', 'Nonprofits'],
+};
+
+INDUSTRY.education = {
+  name: 'Education — HitPay',
+  accent: C.blue600,
+  heroBg: C.blue50,
+  pillBg: C.blue100,
+  badge: 'Education & Enrichment',
+  heroH1: 'Automate tuition fee\ncollection with ease',
+  heroSub: 'Replace manual PayNow transfers and cash collection. Set up recurring billing for monthly tuition fees and get paid automatically — no more chasing parents.',
+  heroMockFn: () => mockSubscriptions(),
+  heroMockX: 880, heroMockY: 130,
+  trustTitle: 'TRUSTED BY EDUCATION BUSINESSES ACROSS SINGAPORE',
+  trustItems: ['Tuition Centres', 'Enrichment Schools', 'Language Schools', 'Music Academies', 'Online Tutors', 'Preschools'],
+  introTitle: 'Modern payments for modern education businesses',
+  introSub: 'HitPay helps tuition centres, enrichment schools, and private tutors automate fee collection, manage subscriptions, and accept every payment method parents prefer.',
+  features: [
+    {
+      label: 'Recurring Billing',
+      h2: 'Automate monthly fee collection — set it and forget it',
+      p: 'Stop collecting tuition fees manually. Set up recurring billing and HitPay automatically charges parents monthly — with automatic receipts and smart retries for failed payments.',
+      bullets: [
+        'Monthly, weekly, and term billing cycles',
+        'Automatic email receipts to parents after each charge',
+        'Smart retries for failed payments — reduce lapsed accounts',
+        'Parents manage their own payment details securely',
+      ],
+      mockFn: () => mockSubscriptions(),
+    },
+    {
+      label: 'Payment Links',
+      h2: 'Collect registration fees and materials charges instantly',
+      p: 'Create a payment link in seconds for enrolment fees, exam registrations, or material charges. Share it via WhatsApp or email — parents pay in one tap.',
+      bullets: [
+        'Custom amount links for any one-time charge',
+        'All major payment methods including PayNow and GrabPay',
+        'Works on mobile — parents pay without visiting a branch',
+        'Instant notification when payment is completed',
+      ],
+      mockFn: () => mockPaymentLink(),
+    },
+    {
+      label: 'Cashless Events',
+      h2: 'Accept cashless payments at school events and fairs',
+      p: 'Run bake sales, open houses, and school fairs without handling cash. HitPay QR codes let visitors pay instantly with PayNow or any e-wallet.',
+      bullets: [
+        'Static QR codes to print and display at stalls',
+        'No Wi-Fi required for PayNow QR payments',
+        'All proceeds tracked in your dashboard in real time',
+        'Tap to Pay available for card-paying guests',
+      ],
+      mockFn: () => mockQR(),
+    },
+    {
+      label: 'Corporate Invoicing',
+      h2: 'Invoice companies and corporate clients professionally',
+      p: 'Send branded invoices to corporate training clients, schools, and government bodies. Track payment status, send automated reminders, and maintain a full audit trail.',
+      bullets: [
+        'Customisable invoice templates with your logo',
+        'Online payment link embedded in every invoice',
+        'Automated reminders before and after due date',
+        'Full payment records for IRAS and audit purposes',
+      ],
+      mockFn: () => mockInvoice(),
+    },
+  ],
+  stats: [
+    { value: 'S$0',   label: 'Monthly platform fees' },
+    { value: '100%',  label: 'Automated fee collection' },
+    { value: 'T+1',   label: 'Business day payouts' },
+    { value: '<5 min', label: 'Setup time' },
+  ],
+  statsBg: C.slate900, statsAccent: C.blue600,
+  testimonial: {
+    quote: "Before HitPay, I spent 3 hours every month chasing parents for payment via bank transfer. Now fees are collected automatically and I only deal with exceptions. It's been transformational.",
+    name: 'Michelle Ong',
+    role: 'Principal, BrightMinds Enrichment Centre — Singapore',
+    lightBg: C.blue100,
+  },
+  gridTitle: 'Everything your education business needs',
+  gridSub: 'From enrolment to recurring billing, HitPay simplifies every payment touchpoint for educators.',
+  gridItems: [
+    { title: 'Flexible billing',    desc: 'Bill parents monthly, weekly, by term, or per class. HitPay supports all billing frequencies.' },
+    { title: 'Parent self-service', desc: 'Parents can update card details, view receipts, and manage their subscription without calling you.' },
+    { title: 'PDPA compliant',      desc: "HitPay stores payment data securely so you don't have to. No more spreadsheets with sensitive card info." },
+    { title: 'Integrated receipts', desc: 'Every payment triggers an automatic, GST-compliant receipt emailed directly to parents.' },
+    { title: 'Promo codes',         desc: 'Offer sibling discounts, new student promotions, or loyalty rewards with built-in coupon codes.' },
+    { title: 'Multi-branch',        desc: 'Run multiple locations from one account. Unified revenue view, separate location reporting.' },
+  ],
+  related: [
+    { emoji: '💪', title: 'Fitness', desc: 'Recurring billing for gym memberships and class packs.' },
+    { emoji: '💅', title: 'Beauty',  desc: 'Membership billing and booking payments for wellness businesses.' },
+    { emoji: '💜', title: 'Nonprofits', desc: 'Accept donations and grants with zero platform fees.' },
+  ],
+  faqItems: [
+    { q: 'Can parents set up automatic monthly tuition fee payments through HitPay?', a: 'Yes. HitPay subscriptions let parents set up auto-pay. You get paid on time every month without any manual follow-up.' },
+    { q: 'Does HitPay support GIRO or just card payments for recurring billing?', a: 'HitPay currently supports recurring card payments (Visa, Mastercard) and PayNow for subscriptions. GIRO is not supported.' },
+    { q: 'What is the cheapest way to collect monthly tuition fees in Singapore?', a: 'HitPay subscriptions via PayNow offer some of the lowest rates for recurring payments in Singapore, with no monthly platform fee.' },
+    { q: 'Can I offer sibling discounts or different pricing tiers through HitPay?', a: 'Yes. HitPay supports multiple subscription plans, discount codes, and custom pricing for different student categories.' },
+    { q: 'Is it safe for parents to store their card details for recurring billing?', a: 'Yes. HitPay is PCI DSS compliant. Card details are securely tokenised and never stored on HitPay servers directly.' },
+    { q: 'What documents do I need to sign up for HitPay as a tuition centre?', a: 'You need your ACRA business registration, NRIC of the director, and your business bank account details for payouts.' },
+    { q: 'Can I track which students have paid and which have not from the dashboard?', a: 'Yes. Your HitPay dashboard shows all subscription statuses — active, pending, and failed — with student-level detail.' },
+    { q: 'Does HitPay integrate with any school management or scheduling software?', a: 'HitPay integrates via API and webhooks. Direct plugins for school management platforms are not currently available.' },
+  ],
+  ctaTitle: 'Automate your tuition fee collection today',
+  ctaSub: 'Join Singapore educators already saving hours every month with HitPay. Free to sign up.',
+  ctaBtn1: 'Start for free',
+  ctaBtn2: 'Request a demo',
+  footerProducts: ['Subscriptions', 'Payment Links', 'QR Payments', 'Invoicing'],
+  footerIndustries: ['Education', 'Fitness', 'Beauty', 'Nonprofits'],
+};
+
+INDUSTRY.computers = {
+  name: 'Computers & Electronics — HitPay',
+  accent: C.indigo600,
+  heroBg: { r: 0.973, g: 0.969, b: 1.0 },
+  pillBg: C.indigo50,
+  badge: 'Computers & Electronics',
+  heroH1: 'Payments for electronics\nstores, online and in-store',
+  heroSub: 'Sell laptops, phones, and components online and in-store. Accept PayNow, cards, BNPL, and more — with one unified platform and next-day payouts.',
+  heroMockFn: () => mockCheckout(),
+  heroMockX: 900, heroMockY: 130,
+  trustTitle: 'TRUSTED BY ELECTRONICS RETAILERS ACROSS SINGAPORE',
+  trustItems: ['Computer Shops', 'Mobile Retailers', 'IT Resellers', 'Gaming Stores', 'Accessories', 'Component Suppliers'],
+  introTitle: 'Handle high-value electronics transactions with confidence',
+  introSub: 'From S$50 accessories to S$5,000 enterprise workstations, HitPay handles every transaction securely with the payment methods your customers expect.',
+  features: [
+    {
+      label: 'Online Checkout',
+      h2: 'A checkout that converts — with all local payment methods',
+      p: "HitPay's checkout supports PayNow, GrabPay, Visa, Mastercard, Atome BNPL, and 700+ payment methods. Fewer abandoned carts. More completed sales.",
+      bullets: [
+        'PayNow, GrabPay, ShopeePay, and major e-wallets',
+        'Buy Now Pay Later with Atome for big-ticket items',
+        'Shopify, WooCommerce, and Wix integrations available',
+        'Mobile-optimised checkout for on-the-go purchases',
+      ],
+      mockFn: () => mockCheckout(),
+    },
+    {
+      label: 'In-store POS',
+      h2: 'A POS system that handles high-value retail',
+      p: 'Manage inventory, process payments, and issue receipts from one system. HitPay POS handles high-ticket electronics transactions reliably — with PayNow, cards, and BNPL all in one checkout.',
+      bullets: [
+        'Inventory management with low-stock alerts',
+        'End-of-day sales reports and cash reconciliation',
+        'Multiple staff logins with permission levels',
+        'Works on iPad, Android tablet, or PC',
+      ],
+      mockFn: () => mockPOSDashboard(),
+    },
+    {
+      label: 'Integrations',
+      h2: 'Works with your existing store platform',
+      p: 'Already on Shopify or WooCommerce? Add HitPay in minutes with our pre-built plugins. Or build a custom checkout experience with our developer API.',
+      bullets: [
+        'One-click plugin for Shopify, WooCommerce, Wix, Magento',
+        'RESTful API for custom storefronts and B2B portals',
+        'No coding required for platform integrations',
+        'Webhooks for real-time order and payment notifications',
+      ],
+      mockFn: () => mockIntegrations(),
+    },
+    {
+      label: 'B2B & Corporate',
+      h2: 'Invoice IT departments and enterprise buyers',
+      p: 'Corporate clients need professional invoices. HitPay lets you send branded invoices with payment links for bulk hardware orders, maintenance contracts, and software licences.',
+      bullets: [
+        'Branded invoice templates for professional B2B billing',
+        'Online payment link embedded in every invoice',
+        'PO reference numbers for corporate procurement',
+        'Automated reminders reduce late payment rate',
+      ],
+      mockFn: () => mockInvoice(),
+    },
+  ],
+  stats: [
+    { value: 'S$0',  label: 'Monthly platform fees' },
+    { value: '700+', label: 'Payment methods' },
+    { value: 'T+1',  label: 'Business day payouts' },
+    { value: '1 min', label: 'Plugin install time' },
+  ],
+  statsBg: C.slate900, statsAccent: C.indigo600,
+  testimonial: {
+    quote: 'Switching from Stripe to HitPay meant we could finally accept PayNow and GrabPay at checkout. Our Singapore conversion rate jumped by 22% in the first month — and we saved on fees.',
+    name: 'Jason Ng',
+    role: 'Founder, TechVault Electronics — Singapore',
+    lightBg: C.indigo100,
+  },
+  gridTitle: 'Everything your electronics business needs',
+  gridSub: 'HitPay gives electronics retailers a complete payment stack — online, in-store, and B2B.',
+  gridItems: [
+    { title: 'BNPL payments',    desc: 'Offer Atome BNPL at checkout. Drive higher average order values on laptops, phones, and accessories.' },
+    { title: 'Fast payouts',     desc: 'Get paid the next business day. No holding periods — critical for high-turnover electronics retail.' },
+    { title: 'Fraud protection', desc: 'Built-in risk scoring on every transaction. Reduces chargebacks without blocking legit customers.' },
+    { title: 'Multi-currency',   desc: 'Sell to international customers. Accept cross-border payments with transparent conversion rates.' },
+    { title: 'Hardware terminals', desc: 'Deploy card terminals at your service counter. Accepts contactless cards, PayNow, and NFC wallets.' },
+    { title: 'Analytics',        desc: 'Real-time sales trends by product, channel, and location. Make smarter buying decisions.' },
+  ],
+  related: [
+    { emoji: '🛒', title: 'E-commerce', desc: 'Powerful checkout for online electronics and accessories stores.' },
+    { emoji: '🏪', title: 'Retail',     desc: 'POS and omnichannel payments for physical retail locations.' },
+    { emoji: '📦', title: 'Wholesale',  desc: 'Invoice and collect from IT resellers and corporate buyers.' },
+  ],
+  faqItems: [
+    { q: 'I am currently using Stripe — why should I switch to HitPay?', a: 'HitPay adds PayNow, GrabPay, and local Singapore wallets that Stripe does not support — boosting local conversion rates significantly.' },
+    { q: 'Can HitPay handle high-value transactions above S$10,000 for enterprise orders?', a: 'Yes. HitPay supports high-value transactions. For very large orders, bank transfer via invoice is also available as an option.' },
+    { q: 'Does HitPay support PayNow as a checkout option on my existing website?', a: "Yes. HitPay's Shopify and WooCommerce plugins add PayNow, GrabPay, and all major payment methods to your existing checkout." },
+    { q: 'Is there a hardware cost or monthly rental fee for the HitPay card terminal?', a: 'HitPay card terminals are available for purchase outright. There is no monthly rental fee — you own the device.' },
+    { q: 'Can I run multiple store locations with separate inventory and revenue reporting?', a: 'Yes. HitPay supports multi-location retail with separate inventory tracking and unified revenue reporting across all stores.' },
+    { q: 'Does HitPay support Atome BNPL for big-ticket electronics purchases?', a: 'Yes. Atome BNPL is available through HitPay, letting customers pay in 3 monthly instalments for high-value electronics.' },
+    { q: 'What is the transaction fee for card payments processed through HitPay?', a: "HitPay's standard card processing rate for Singapore is 2.4% + S$0.50 per transaction. PayNow rates are lower." },
+    { q: 'How long does it take to integrate HitPay with my Shopify or WooCommerce store?', a: 'Installation takes under 5 minutes using our pre-built plugin. No developer is needed for standard platform integrations.' },
+  ],
+  ctaTitle: 'Ready to upgrade your payment stack?',
+  ctaSub: 'Free to start, no monthly fees. Just sign up and start accepting payments today.',
+  ctaBtn1: 'Start for free',
+  ctaBtn2: 'Talk to sales',
+  footerProducts: ['Payment Gateway', 'POS System', 'Card Terminals', 'Invoicing'],
+  footerIndustries: ['Electronics', 'E-commerce', 'Retail', 'Wholesale'],
+};
+
+INDUSTRY.beauty = {
+  name: 'Beauty & Wellness — HitPay',
+  accent: C.rose600,
+  heroBg: C.rose50,
+  pillBg: C.rose50,
+  badge: 'Beauty & Wellness',
+  heroH1: 'Payments for salons,\nspas, and wellness studios',
+  heroSub: 'Sell memberships, collect deposits, and accept walk-in payments. HitPay makes it simple to run the financial side of your beauty or wellness business.',
+  heroMockFn: () => mockSubscriptions(),
+  heroMockX: 880, heroMockY: 130,
+  trustTitle: 'TRUSTED BY BEAUTY & WELLNESS BUSINESSES ACROSS SINGAPORE',
+  trustItems: ['Hair Salons', 'Nail Studios', 'Spas', 'Aesthetic Clinics', 'Massage Therapy', 'Yoga Studios'],
+  introTitle: 'Focus on your clients, not chasing payments',
+  introSub: 'From recurring memberships to one-time appointment deposits, HitPay automates your payment collection so you can focus on delivering exceptional client experiences.',
+  features: [
+    {
+      label: 'Memberships',
+      h2: 'Sell monthly packages and memberships automatically',
+      p: 'Offer monthly facial packages, hair care plans, or wellness memberships with automatic recurring billing. HitPay charges clients monthly and sends receipts — no manual action needed.',
+      bullets: [
+        'Monthly and annual membership billing',
+        'Automatic receipts sent to clients after each charge',
+        'Smart retries for failed payments',
+        'Clients manage their own payment details securely',
+      ],
+      mockFn: () => mockSubscriptions(),
+    },
+    {
+      label: 'Deposits',
+      h2: 'Collect appointment deposits to protect your calendar',
+      p: 'Reduce no-shows by requiring a deposit when booking. Send a payment link via WhatsApp and collect the deposit before the appointment is confirmed.',
+      bullets: [
+        'Custom deposit amounts for any service',
+        'Send via WhatsApp, Instagram, or email',
+        'Clients pay with PayNow, cards, or GrabPay',
+        'Instant notification when deposit is received',
+      ],
+      mockFn: () => mockPaymentLink(),
+    },
+    {
+      label: 'Walk-in Payments',
+      h2: 'Accept contactless payments at reception or chairside',
+      p: "Accept cards, PayNow, and digital wallets at your reception using HitPay's card terminal, or turn any iPhone into a payment terminal with Tap to Pay.",
+      bullets: [
+        'Tap to Pay on iPhone or Android — no hardware needed',
+        'Full card terminal for high-volume salons',
+        'PayNow QR displayed at reception for instant payment',
+        'All payments synced to your dashboard in real time',
+      ],
+      mockFn: () => mockTapToPay(),
+    },
+    {
+      label: 'Business Reporting',
+      h2: 'Understand your revenue and busiest time slots',
+      p: 'See your daily and monthly revenue, top-performing services, and payment method breakdown from one dashboard. Know exactly how your business is growing.',
+      bullets: [
+        'Daily and monthly revenue reports',
+        'Revenue by service or product category',
+        'Export to CSV for your accountant',
+        'Next business day payouts — reliable cash flow',
+      ],
+      mockFn: () => mockPOSDashboard(),
+    },
+  ],
+  stats: [
+    { value: 'S$0',  label: 'Monthly platform fees' },
+    { value: '<60s', label: 'Payment link creation' },
+    { value: 'T+1',  label: 'Business day payouts' },
+    { value: '100%', label: 'Secure PCI DSS payments' },
+  ],
+  statsBg: C.slate900, statsAccent: C.rose600,
+  testimonial: {
+    quote: 'No-shows used to cost us 15% of our monthly revenue. With HitPay deposit links, clients pay a S$20 deposit to confirm every booking. Our no-show rate dropped to near zero.',
+    name: 'Priya Nair',
+    role: 'Founder, Bloom Beauty Studio — Singapore',
+    lightBg: C.rose100,
+  },
+  gridTitle: 'Everything your beauty business needs',
+  gridSub: 'HitPay covers every payment touchpoint for salons, spas, and wellness studios.',
+  gridItems: [
+    { title: 'Package vouchers',   desc: 'Sell treatment packages and gift vouchers online via your HitPay payment page. No website needed.' },
+    { title: 'Product sales',      desc: 'Sell skincare and retail products alongside services using the HitPay online store.' },
+    { title: 'QR codes',           desc: 'Print QR codes for reception desks and mirrors. Clients pay instantly with their phone.' },
+    { title: 'Automated receipts', desc: 'Every payment triggers an instant receipt. Reduce admin time at reception.' },
+    { title: 'Staff management',   desc: 'Create staff accounts with permission levels. Track which therapist or stylist generated each sale.' },
+    { title: 'Multi-location',     desc: 'Manage multiple outlets from one HitPay account. Unified reporting across all your salons.' },
+  ],
+  related: [
+    { emoji: '💪', title: 'Fitness',   desc: 'Recurring gym memberships and class pack billing.' },
+    { emoji: '📚', title: 'Education', desc: 'Automated tuition fee collection and enrolment payments.' },
+    { emoji: '🏪', title: 'Retail',    desc: 'POS and online store for beauty product retail.' },
+  ],
+  faqItems: [
+    { q: 'Can I require clients to pay a deposit to confirm their appointment?', a: 'Yes. Create a custom-amount payment link and share it via WhatsApp. Clients pay the deposit instantly to confirm their slot.' },
+    { q: 'Does HitPay integrate with booking systems like Fresha or Vagaro?', a: 'HitPay does not have a direct integration with Fresha or Vagaro, but works alongside them for payment collection.' },
+    { q: 'How do I sell monthly membership packages to my salon clients?', a: 'Use HitPay Subscriptions to create a recurring monthly plan. Clients are charged automatically on their renewal date each month.' },
+    { q: 'Can I accept contactless card payments at my chair without a terminal?', a: 'Yes. HitPay Tap to Pay turns your iPhone or Android into a card reader — accept cards anywhere without any extra hardware.' },
+    { q: 'What is the cheapest way to collect payments from walk-in clients?', a: 'Display a PayNow QR at reception. Clients scan and pay instantly — zero hardware cost and the lowest available transaction rate.' },
+    { q: 'Can I issue gift vouchers or package credits through HitPay?', a: 'Yes. Create a payment link for gift vouchers or package bundles. Clients purchase via PayNow, card, or GrabPay in seconds.' },
+    { q: 'Is there a setup fee or monthly cost for using HitPay at my salon?', a: 'No. HitPay is free to set up with no monthly subscription. You only pay a per-transaction fee when payments are received.' },
+    { q: 'How long does it take to set up HitPay and start accepting payments?', a: 'Account approval takes 1–3 business days. Once approved, you can accept your first payment in under 5 minutes.' },
+  ],
+  ctaTitle: 'Reduce no-shows and automate your billing today',
+  ctaSub: 'Join Singapore beauty and wellness businesses already using HitPay. Free to start.',
+  ctaBtn1: 'Start for free',
+  ctaBtn2: 'Request a demo',
+  footerProducts: ['Subscriptions', 'Payment Links', 'Tap to Pay', 'Card Terminals'],
+  footerIndustries: ['Beauty', 'Fitness', 'Education', 'Retail'],
+};
+
+INDUSTRY.furniture = {
+  name: 'Furniture & Home — HitPay',
+  accent: C.amber600,
+  heroBg: C.amber50,
+  pillBg: C.amber50,
+  badge: 'Furniture & Home Living',
+  heroH1: 'Sell furniture online\nand in-store with ease',
+  heroSub: 'Accept BNPL for big-ticket items, invoice interior designers and corporate clients, and manage your showroom and e-commerce payments from one platform.',
+  heroMockFn: () => mockCheckout(),
+  heroMockX: 900, heroMockY: 130,
+  trustTitle: 'TRUSTED BY FURNITURE & HOME BUSINESSES IN SINGAPORE',
+  trustItems: ['Furniture Showrooms', 'Mattress Stores', 'Interior Design', 'Homeware', 'Lighting', 'Custom Furniture'],
+  introTitle: 'High-value purchases need a seamless payment experience',
+  introSub: 'Furniture customers spend S$1,000–S$20,000 in a single visit. HitPay ensures every payment — BNPL, card, PayNow, or B2B invoice — is handled professionally.',
+  features: [
+    {
+      label: 'BNPL Payments',
+      h2: 'Offer instalment payments and close more deals',
+      p: 'Large furniture purchases are easier to close when customers can split the cost. HitPay supports Atome BNPL — letting buyers pay in 3 monthly instalments while you receive the full amount upfront.',
+      bullets: [
+        'Atome Buy Now Pay Later at checkout',
+        'Customers pay in 3 zero-interest instalments',
+        'You receive the full amount in one settlement',
+        'Available online and at your showroom POS',
+      ],
+      mockFn: () => mockCheckout(),
+    },
+    {
+      label: 'Showroom Payments',
+      h2: 'Send payment links from your showroom in seconds',
+      p: "When a customer loves a piece in your showroom but isn't ready to pay at the counter, send a payment link to their phone. They pay at home — you close the sale.",
+      bullets: [
+        'Send payment links via WhatsApp from the showroom floor',
+        'Custom deposit amounts for custom order confirmations',
+        'Customers pay with PayNow, cards, or GrabPay',
+        'Instant notification when payment is received',
+      ],
+      mockFn: () => mockPaymentLink(),
+    },
+    {
+      label: 'In-Store POS',
+      h2: 'A POS system built for high-value retail',
+      p: 'HitPay POS manages your inventory, processes payments, and issues receipts — all in one system. Works on iPad or Android tablet, no proprietary hardware required.',
+      bullets: [
+        'Inventory management for large SKU catalogues',
+        'Accepts all payment methods at one terminal',
+        'End-of-day reconciliation reports',
+        'Multiple staff accounts with permission controls',
+      ],
+      mockFn: () => mockPOS(),
+    },
+    {
+      label: 'Trade Invoicing',
+      h2: 'Invoice interior designers and corporate buyers',
+      p: 'Send professional invoices to interior designers, hotels, and corporate procurement teams. Payment links embedded in every invoice make it easy for clients to pay immediately.',
+      bullets: [
+        'Branded invoices with your logo and bank details',
+        'Online payment link in every invoice',
+        'Track paid, pending, and overdue invoices at a glance',
+        'Automated payment reminders reduce late payments',
+      ],
+      mockFn: () => mockInvoice(),
+    },
+  ],
+  stats: [
+    { value: 'S$0',  label: 'Monthly platform fees' },
+    { value: '3x',   label: 'Higher conversion with BNPL' },
+    { value: 'T+1',  label: 'Business day payouts' },
+    { value: '700+', label: 'Payment methods' },
+  ],
+  statsBg: C.slate900, statsAccent: C.amber600,
+  testimonial: {
+    quote: 'Adding Atome BNPL to our checkout increased our average order value by 40%. Customers who hesitated at S$3,000 for a sofa set now convert when they see they can pay in 3 instalments.',
+    name: 'Daniel Chua',
+    role: 'Owner, The Nook Furniture — Singapore',
+    lightBg: C.amber100,
+  },
+  gridTitle: 'Everything your furniture business needs',
+  gridSub: 'From showroom to delivery, HitPay handles every payment for furniture and home retailers.',
+  gridItems: [
+    { title: 'Custom deposits', desc: 'Collect custom order deposits via payment link. Secure the sale before production begins.' },
+    { title: 'Fast payouts',    desc: 'Receive funds the next business day. Essential for high-ticket furniture retailers managing cash flow.' },
+    { title: 'Multi-currency',  desc: 'Accept payments from international buyers and interior design clients in their currency.' },
+    { title: 'Card terminals',  desc: 'Deploy card terminals at your showroom counter. Accepts cards, PayNow, and contactless NFC.' },
+    { title: 'QR codes',        desc: 'Display QR codes on price tags. Let customers pay instantly without queuing at the counter.' },
+    { title: 'Online store',    desc: "Sell selected pieces and accessories online with HitPay's built-in store. No monthly subscription." },
+  ],
+  related: [
+    { emoji: '🏪', title: 'Retail',     desc: 'Omnichannel POS and online payments for physical retail stores.' },
+    { emoji: '🛒', title: 'E-commerce', desc: 'Checkout with BNPL, PayNow, and 700+ methods for online stores.' },
+    { emoji: '📦', title: 'Wholesale',  desc: 'Invoice interior designers and corporate clients professionally.' },
+  ],
+  faqItems: [
+    { q: 'How do I set up Buy Now Pay Later (BNPL) at my furniture showroom?', a: 'Enable Atome BNPL in your HitPay settings. It becomes available at checkout online and at your showroom POS immediately.' },
+    { q: 'Can I use HitPay to accept payments at a trade show or pop-up event?', a: 'Yes. Use Tap to Pay on your phone or print a QR code for instant payments anywhere — no Wi-Fi required for PayNow QR.' },
+    { q: 'I sell to both retail and trade customers — can one HitPay account handle both?', a: 'Yes. Use payment links for trade clients and your POS for retail walk-ins. All sales are tracked in one unified dashboard.' },
+    { q: 'Does HitPay support product variants like fabric colour, material, or size?', a: "HitPay's online store supports product variants. For custom showroom orders, use payment links with custom amounts and descriptions." },
+    { q: 'Can customers pay a deposit online and the balance when their furniture arrives?', a: 'Yes. Create separate payment links for the deposit and the balance. Each link can have a custom amount and clear description.' },
+    { q: 'How does HitPay compare to using my bank payment terminal at my showroom?', a: 'HitPay terminals accept more payment methods (PayNow, GrabPay, e-wallets) and provide unified online and in-store reporting.' },
+    { q: 'Is there a transaction limit for high-value furniture purchases?', a: 'HitPay handles large transactions comfortably. For very high-value orders, invoice payments via bank transfer are also supported.' },
+    { q: 'What documents do I need to sign up for HitPay as a furniture retailer?', a: 'You need your ACRA business registration, director NRIC, and a business bank account. Approval takes 1–3 business days.' },
+  ],
+  ctaTitle: 'Modernise your showroom payments today',
+  ctaSub: 'Start accepting BNPL, PayNow, and cards with HitPay. Free to sign up, no monthly fees.',
+  ctaBtn1: 'Start for free',
+  ctaBtn2: 'Request a demo',
+  footerProducts: ['BNPL', 'POS System', 'Payment Links', 'Invoicing'],
+  footerIndustries: ['Furniture', 'Retail', 'E-commerce', 'Wholesale'],
+};
+
+INDUSTRY.fitness = {
+  name: 'Fitness & Gyms — HitPay',
+  accent: C.emerald600,
+  heroBg: C.emerald50,
+  pillBg: C.emerald50,
+  badge: 'Fitness & Gyms',
+  heroH1: 'Automate gym membership\nbilling and class payments',
+  heroSub: 'Replace manual PayNow collections with automatic recurring billing. Members pay on time, every time — while you focus on coaching, not chasing payments.',
+  heroMockFn: () => mockSubscriptions(),
+  heroMockX: 880, heroMockY: 130,
+  trustTitle: 'TRUSTED BY FITNESS BUSINESSES ACROSS SINGAPORE',
+  trustItems: ['Gyms', 'CrossFit Boxes', 'Yoga Studios', 'Pilates Studios', 'Martial Arts', 'Personal Trainers'],
+  introTitle: 'Every membership type, automated',
+  introSub: 'From monthly gym memberships to 10-class packs and personal training retainers — HitPay handles every billing model automatically, with zero monthly fees.',
+  features: [
+    {
+      label: 'Memberships',
+      h2: 'Automate monthly membership billing — set it and forget it',
+      p: 'Stop chasing members for PayNow transfers. Set up recurring billing and HitPay automatically charges members on their renewal date — with receipts, reminders, and smart retries included.',
+      bullets: [
+        'Monthly, quarterly, and annual membership billing',
+        'Automatic receipts emailed to members',
+        'Smart retries for failed payments to reduce churn',
+        'Members manage their own payment details securely',
+      ],
+      mockFn: () => mockSubscriptions(),
+    },
+    {
+      label: 'Drop-ins & Check-in',
+      h2: 'Accept drop-in payments at the door with Tap to Pay',
+      p: 'Turn any iPhone or Android into a card reader with HitPay Tap to Pay. Accept contactless card payments at reception without any additional hardware.',
+      bullets: [
+        'Tap to Pay on iPhone and Android',
+        'Accepts Visa, Mastercard, Apple Pay, Google Pay',
+        'No hardware cost — use any smartphone you own',
+        'Transactions sync instantly to your dashboard',
+      ],
+      mockFn: () => mockTapToPay(),
+    },
+    {
+      label: 'Class Packs',
+      h2: 'Sell class packs and PT sessions online',
+      p: 'Create payment links for 10-class packs, personal training bundles, or introductory offers. Share via WhatsApp or your Instagram bio — members buy in seconds.',
+      bullets: [
+        'Custom price payment links for any package',
+        'One-click purchase — no app required',
+        'Works on mobile for all major payment methods',
+        'Instant notification when a pack is purchased',
+      ],
+      mockFn: () => mockPaymentLink(),
+    },
+    {
+      label: 'Performance Dashboard',
+      h2: 'Track revenue, MRR, and member growth in real time',
+      p: "HitPay's dashboard shows your Monthly Recurring Revenue, active members, class pack sales, and churn — so you can make better decisions about your gym's growth.",
+      bullets: [
+        'Monthly Recurring Revenue (MRR) overview',
+        'Revenue by product: memberships, class packs, retail',
+        'Churn and new member tracking',
+        'Next business day payouts',
+      ],
+      mockFn: () => mockPOSDashboard(),
+    },
+  ],
+  stats: [
+    { value: 'S$0',   label: 'Monthly platform fees' },
+    { value: '100%',  label: 'Automated billing' },
+    { value: 'T+1',   label: 'Business day payouts' },
+    { value: '<5 min', label: 'Member onboarding' },
+  ],
+  statsBg: C.slate900, statsAccent: C.emerald600,
+  testimonial: {
+    quote: 'We had 120 members paying manually via bank transfer every month. Half of them were always late. Since switching to HitPay recurring billing, 98% of renewals happen automatically on the due date.',
+    name: 'Kelvin Loh',
+    role: 'Head Coach & Owner, Forge CrossFit — Singapore',
+    lightBg: C.emerald100,
+  },
+  gridTitle: 'Everything your gym or fitness studio needs',
+  gridSub: 'HitPay covers the full billing lifecycle for gyms, yoga studios, and personal trainers.',
+  gridItems: [
+    { title: 'Free trial management', desc: 'Offer free or discounted trials. HitPay automatically upgrades to full billing after the trial period ends.' },
+    { title: 'Supplement retail',     desc: 'Sell protein, gear, and accessories in-store using HitPay POS or your online store.' },
+    { title: 'Card terminals',        desc: 'Deploy a card terminal at reception for walk-in memberships and drop-in fees.' },
+    { title: 'Promo codes',           desc: 'Run new member promotions and referral discounts with built-in coupon code support.' },
+    { title: 'Multi-location',        desc: 'Manage all your gym locations from one HitPay account. Unified revenue, one payout.' },
+    { title: 'Automated receipts',    desc: 'Every payment triggers an instant receipt. No manual invoice generation for each member.' },
+  ],
+  related: [
+    { emoji: '💅', title: 'Beauty',    desc: 'Membership billing and payments for beauty and wellness studios.' },
+    { emoji: '📚', title: 'Education', desc: 'Recurring billing for tuition centres and enrichment schools.' },
+    { emoji: '🏪', title: 'Retail',    desc: 'In-store POS for gear, supplements, and merchandise.' },
+  ],
+  faqItems: [
+    { q: 'Can I automate monthly gym membership billing through HitPay?', a: 'Yes. HitPay Subscriptions automates monthly billing. Members are charged automatically and receive receipts without any manual action.' },
+    { q: 'How do I offer a free trial period before charging the full membership fee?', a: "Set up a subscription with a trial period in HitPay. Members aren't charged until the trial ends, and you're notified automatically." },
+    { q: 'Does HitPay integrate with Mindbody or Glofox gym management software?', a: 'HitPay does not have a direct plugin for Mindbody or Glofox, but can be integrated via API and webhooks for custom setups.' },
+    { q: 'Can I sell personal training packages and supplements from the same account?', a: 'Yes. HitPay supports multiple product types — subscriptions for memberships and payment links for packages and retail.' },
+    { q: 'How do I handle members who want to pause or cancel their membership?', a: 'Pause or cancel any subscription from your HitPay dashboard in seconds. Members can also self-manage via their billing portal.' },
+    { q: 'What is the cheapest way to collect recurring membership fees in Singapore?', a: 'HitPay subscriptions via PayNow offer the lowest processing rates available for recurring payments in Singapore.' },
+    { q: 'Can I accept drop-in payments without a physical card terminal?', a: 'Yes. HitPay Tap to Pay on iPhone or Android accepts contactless card payments at the door — no hardware cost required.' },
+    { q: 'How long does it take to migrate existing gym members to HitPay billing?', a: 'Set up subscription plans in under 30 minutes. Invite members to enrol with a simple payment link sent via WhatsApp.' },
+  ],
+  ctaTitle: 'Automate your gym billing today',
+  ctaSub: 'Join Singapore gyms and fitness studios already using HitPay. Free to start, no monthly fees.',
+  ctaBtn1: 'Start for free',
+  ctaBtn2: 'Request a demo',
+  footerProducts: ['Subscriptions', 'Tap to Pay', 'Payment Links', 'POS System'],
+  footerIndustries: ['Fitness', 'Beauty', 'Education', 'Retail'],
+};
+
+INDUSTRY.events = {
+  name: 'Events & Weddings — HitPay',
+  accent: C.violet600,
+  heroBg: { r: 0.972, g: 0.957, b: 1.0 },
+  pillBg: C.violet50,
+  badge: 'Events & Wedding Planning',
+  heroH1: 'Collect event deposits\nand ticket sales instantly',
+  heroSub: 'Send payment links for deposits, sell event tickets, and invoice clients — all from one platform. No more chasing payments via bank transfer.',
+  heroMockFn: () => mockPaymentLink(),
+  heroMockX: 900, heroMockY: 130,
+  trustTitle: 'TRUSTED BY EVENT PROFESSIONALS ACROSS SINGAPORE',
+  trustItems: ['Wedding Planners', 'Event Venues', 'Photographers', 'Caterers', 'Live Entertainment', 'Corporate Events'],
+  introTitle: 'Every stage of the event payment journey',
+  introSub: 'From initial deposit to final balance, ticket sales to vendor payments — HitPay handles every payment touchpoint for event professionals.',
+  features: [
+    {
+      label: 'Event Ticketing',
+      h2: 'Sell event tickets and collect RSVPs with payment',
+      p: 'Create a payment link for any event — conferences, workshops, dinners, or parties. Share it on social media or via email. Attendees pay instantly with any payment method they prefer.',
+      bullets: [
+        'Custom price links for tickets or RSVPs',
+        'Supports PayNow, cards, GrabPay, and more',
+        'Share on social media, email, or WhatsApp',
+        'Real-time attendee and payment tracking',
+      ],
+      mockFn: () => mockPaymentLink(),
+    },
+    {
+      label: 'On-the-Day Payments',
+      h2: 'Accept walk-in registrations and on-site payments',
+      p: 'Deploy QR codes at your event entrance for on-the-spot registration and payment. Or use Tap to Pay on your phone to accept card payments anywhere at the venue.',
+      bullets: [
+        'QR codes printable for entrance desks and counters',
+        'Tap to Pay for contactless card acceptance',
+        'All on-site payments synced to dashboard in real time',
+        'No Wi-Fi required for PayNow QR collections',
+      ],
+      mockFn: () => mockQR(),
+    },
+    {
+      label: 'Deposits & Milestones',
+      h2: 'Collect staged payments without spreadsheets',
+      p: "Wedding planners and event coordinators can collect deposits, milestone payments, and final balances with separate payment links. Track what's paid and what's outstanding in one dashboard.",
+      bullets: [
+        'Separate payment links for each milestone',
+        'Custom amounts for deposits, mid-payments, balances',
+        'Instant confirmation when each stage is paid',
+        'Full payment history per event or client',
+      ],
+      mockFn: () => mockInvoice(),
+    },
+    {
+      label: 'Recurring Retainers',
+      h2: 'Bill monthly retainer clients automatically',
+      p: 'If you manage ongoing events for corporate clients, set up automatic monthly billing with HitPay subscriptions. Get paid on time, every month, without manual invoicing.',
+      bullets: [
+        'Monthly and annual retainer billing',
+        'Auto-invoicing with branded receipts',
+        'Smart payment retries for failed charges',
+        'Clients manage their own billing details',
+      ],
+      mockFn: () => mockSubscriptions(),
+    },
+  ],
+  stats: [
+    { value: 'S$0',  label: 'Monthly platform fees' },
+    { value: '<60s', label: 'Payment link creation' },
+    { value: 'T+1',  label: 'Business day payouts' },
+    { value: '100%', label: 'Digital, no cash handling' },
+  ],
+  statsBg: C.slate900, statsAccent: C.violet600,
+  testimonial: {
+    quote: 'Wedding deposits used to take 2-3 weeks via bank transfer. With HitPay payment links, couples pay the deposit within hours of our first meeting. My cash flow is completely transformed.',
+    name: 'Cheryl Han',
+    role: 'Founder, Cheryl Han Events — Wedding Planning, Singapore',
+    lightBg: C.violet100,
+  },
+  gridTitle: 'Everything your events business needs',
+  gridSub: 'HitPay covers every payment scenario for event planners, venues, and wedding professionals.',
+  gridItems: [
+    { title: 'Instant payment links', desc: 'Create custom-amount payment links in under 60 seconds. Share via WhatsApp, email, or social media.' },
+    { title: 'QR at events',         desc: 'Print QR codes for entrance, merchandise, or F&B stalls at your event. No app required for guests.' },
+    { title: 'Refund management',    desc: 'Issue partial or full refunds easily from your dashboard. Clear audit trail for every transaction.' },
+    { title: 'GST invoicing',        desc: 'Generate GST-compliant invoices for corporate event clients. Automatic payment reminders included.' },
+    { title: 'Multi-currency',       desc: 'Accept deposits from international clients in their currency. HitPay handles conversion.' },
+    { title: 'MAS licensed',         desc: 'Collect large deposits with confidence. HitPay is MAS licensed and PCI DSS compliant.' },
+  ],
+  related: [
+    { emoji: '🍽️', title: 'Restaurants', desc: 'Catering and private dining payment collection.' },
+    { emoji: '💜',  title: 'Nonprofits',  desc: 'Charity galas, fundraising events, and donation collection.' },
+    { emoji: '✈️',  title: 'Travel',      desc: 'Tour and experience booking deposits via payment links.' },
+  ],
+  faqItems: [
+    { q: 'My wedding clients keep delaying deposit payments — how does HitPay help me collect faster?', a: 'Send a payment link immediately after the consultation. Clients pay the deposit in one tap — no bank details needed, no delays.' },
+    { q: 'Can I issue partial or full refunds for event deposits through HitPay?', a: 'Yes. Issue full or partial refunds from your HitPay dashboard instantly. Refunds are processed within 5–10 business days to the client.' },
+    { q: 'Can I accept walk-in registrations and on-the-day payments at my event?', a: 'Yes. Display a QR code at the entrance or use Tap to Pay on your phone to accept card payments on the spot.' },
+    { q: 'I offer wedding packages at different price tiers — can I create separate deposit links for each?', a: 'Yes. Create a separate payment link for each package with its own custom amount and description. Share the right one per client.' },
+    { q: 'Is HitPay suitable for a freelance wedding coordinator who is not a registered company?', a: 'Yes. HitPay accepts sole proprietors. You can sign up with your personal NRIC if you are not yet incorporated.' },
+    { q: 'Can I collect payments from international guests in their own currency?', a: 'Yes. HitPay supports international cards and multi-currency payments, allowing overseas guests to pay in their local currency.' },
+    { q: 'How do I track which event guests have paid and which have not?', a: 'Your HitPay dashboard shows all payment link activity in real time — who has paid, when, and the exact amount received.' },
+    { q: 'Is there a setup fee or monthly cost to use HitPay for events?', a: 'No. HitPay has no setup fee and no monthly subscription. You only pay a per-transaction fee when a payment is received.' },
+  ],
+  ctaTitle: 'Ready to get deposits paid faster?',
+  ctaSub: 'Join event professionals across Singapore using HitPay. Free to sign up, no monthly fees.',
+  ctaBtn1: 'Start for free',
+  ctaBtn2: 'Contact sales',
+  footerProducts: ['Payment Links', 'QR Payments', 'Subscriptions', 'Invoicing'],
+  footerIndustries: ['Events', 'Restaurants', 'Travel', 'Nonprofits'],
+};
+
+INDUSTRY.wholesale = {
+  name: 'Wholesale & B2B — HitPay',
+  accent: C.blue600,
+  heroBg: C.blue50,
+  pillBg: C.blue100,
+  badge: 'Wholesale & B2B',
+  heroH1: 'Professional invoicing for\nwholesale and B2B businesses',
+  heroSub: 'Send branded invoices with payment links, collect deposits from buyers, and track outstanding balances — all from one platform that is free to start.',
+  heroMockFn: () => mockInvoice(),
+  heroMockX: 900, heroMockY: 130,
+  trustTitle: 'TRUSTED BY WHOLESALE AND B2B BUSINESSES IN SINGAPORE',
+  trustItems: ['Importers', 'Distributors', 'Manufacturers', 'Suppliers', 'Agents', 'B2B Traders'],
+  introTitle: 'Get paid faster on every wholesale invoice',
+  introSub: "Wholesale buyers pay late. HitPay's invoicing with embedded payment links makes it so easy to pay that buyers often settle within 24 hours — instead of 30 or 60 days.",
+  features: [
+    {
+      label: 'Professional Invoicing',
+      h2: 'Send branded invoices with one-click payment links',
+      p: 'Create professional invoices with your logo, company details, and itemised orders. Embed a payment link so buyers can pay instantly with PayNow, cards, or bank transfer — right from the invoice.',
+      bullets: [
+        'Customisable invoice templates with your branding',
+        'Online payment link embedded in every invoice',
+        'PO reference number fields for corporate buyers',
+        'Automatic payment confirmation to buyer and seller',
+      ],
+      mockFn: () => mockInvoice(),
+    },
+    {
+      label: 'Deposits & Partial Payments',
+      h2: 'Collect deposits before shipment with payment links',
+      p: 'Require a deposit before you prepare or ship an order. Send a custom-amount payment link via email or WhatsApp — buyers pay the deposit instantly.',
+      bullets: [
+        'Custom amount payment links for any deposit size',
+        'Collect deposits before production or shipping',
+        'All major payment methods: PayNow, cards, GrabPay',
+        'Track paid deposits against pending orders',
+      ],
+      mockFn: () => mockPaymentLink(),
+    },
+    {
+      label: 'Revenue Dashboard',
+      h2: 'Track outstanding invoices and cash flow at a glance',
+      p: "HitPay's dashboard shows your total outstanding, collected this month, and overdue invoices. Know which buyers consistently pay late and take action proactively.",
+      bullets: [
+        'Real-time view of outstanding vs collected revenue',
+        'Invoice status: pending, paid, overdue at a glance',
+        'Next business day payouts for collected amounts',
+        'Export to CSV for your accounting software',
+      ],
+      mockFn: () => mockDashboard(),
+    },
+    {
+      label: 'Multi-Channel Sales',
+      h2: 'Unify revenue from all your sales channels',
+      p: 'Selling via distributors, direct to retail, and online? HitPay tracks all your revenue streams in one dashboard. See which channel drives the most value.',
+      bullets: [
+        'Unified revenue view across all sales channels',
+        'Breakdown by buyer, region, or product category',
+        'Integrated with Xero and accounting tools',
+        'Multi-currency support for cross-border buyers',
+      ],
+      mockFn: () => mockOmnichannel(),
+    },
+  ],
+  stats: [
+    { value: 'S$0',  label: 'Monthly platform fees' },
+    { value: '<24h', label: 'Average invoice payment time' },
+    { value: 'T+1',  label: 'Business day payouts' },
+    { value: '100+', label: 'Currencies supported' },
+  ],
+  statsBg: C.slate900, statsAccent: C.blue600,
+  testimonial: {
+    quote: 'Our buyers used to take 45 days on average to pay. After switching to HitPay invoices with payment links, the average is 3 days. The difference in cash flow has been dramatic.',
+    name: 'Edmund Tan',
+    role: 'Director, Pacific Wholesale Trading — Singapore',
+    lightBg: C.blue100,
+  },
+  gridTitle: 'Everything your wholesale business needs',
+  gridSub: 'HitPay provides a complete B2B payment stack for wholesalers, distributors, and suppliers.',
+  gridItems: [
+    { title: 'Automated reminders', desc: 'HitPay sends payment reminders before and after the due date. Reduce late payments without awkward calls.' },
+    { title: 'Credit terms',        desc: 'Set NET 30 or NET 60 terms on invoices. HitPay tracks the due date and reminds buyers automatically.' },
+    { title: 'Multi-currency',      desc: 'Invoice international buyers in their currency. HitPay converts and settles in SGD the next business day.' },
+    { title: 'Audit trail',         desc: 'Full payment history for every invoice. Export to CSV for IRAS or finance team review.' },
+    { title: 'Buyer portal',        desc: 'Buyers can view all their invoices and payment history from a single link — no login required.' },
+    { title: 'MAS licensed',        desc: 'Collect large B2B payments with confidence. HitPay is licensed by the Monetary Authority of Singapore.' },
+  ],
+  related: [
+    { emoji: '🛒', title: 'E-commerce', desc: 'Sell direct-to-consumer alongside your wholesale channel.' },
+    { emoji: '🏪', title: 'Retail',     desc: 'POS and omnichannel payments for retail distribution.' },
+    { emoji: '💻', title: 'Electronics', desc: 'Invoice IT buyers and corporate procurement teams.' },
+  ],
+  faqItems: [
+    { q: 'My wholesale buyers consistently pay late — what can HitPay do to improve my collection rate?', a: 'HitPay invoices include an embedded payment link, making it easy for buyers to pay in one click — cutting average payment time dramatically.' },
+    { q: 'Can I offer different payment terms to different buyers — NET 30 for some, NET 60 for others?', a: 'Yes. Each invoice can have a custom due date. HitPay sends automatic reminders before and after the due date for each buyer.' },
+    { q: 'Does HitPay support purchase order (PO) reference numbers on invoices for corporate buyers?', a: 'Yes. HitPay invoices include a reference number field where you can add the buyer PO number for easy reconciliation.' },
+    { q: 'What is the most cost-effective way to collect SGD payments from Malaysian buyers?', a: 'For Malaysian buyers, international card payments or bank transfer via invoice are recommended. PayNow is available for Singapore residents only.' },
+    { q: 'How long does it take to get set up on HitPay as a wholesale business?', a: 'Account approval takes 1–3 business days after submitting your ACRA registration, director NRIC, and bank account details.' },
+    { q: 'Can I send automated payment reminders without manually chasing each buyer?', a: 'Yes. HitPay automatically sends payment reminders before and after invoice due dates. No manual follow-up required from your team.' },
+    { q: 'Does HitPay integrate with accounting software like Xero or QuickBooks?', a: 'HitPay integrates with Xero. For QuickBooks, you can export transactions to CSV and import them into your accounting software.' },
+    { q: 'Is HitPay suitable for a wholesale business that does not have an incorporated company?', a: 'Yes. HitPay accepts sole proprietors registered with ACRA. You can sign up with your personal NRIC if not yet incorporated.' },
+  ],
+  ctaTitle: 'Get paid faster on every invoice',
+  ctaSub: 'Join Singapore wholesale businesses already collecting faster with HitPay. Free to start.',
+  ctaBtn1: 'Start for free',
+  ctaBtn2: 'Talk to sales',
+  footerProducts: ['Invoicing', 'Payment Links', 'Subscriptions', 'Payment Gateway'],
+  footerIndustries: ['Wholesale', 'E-commerce', 'Retail', 'Electronics'],
+};
+
+// ── INDUSTRY BUILDER WRAPPERS ─────────────────────────────────
+
+function buildRestaurants(xOffset) { return buildIndustry(INDUSTRY.restaurants, xOffset); }
+function buildTravel(xOffset)      { return buildIndustry(INDUSTRY.travel, xOffset); }
+function buildEducation(xOffset)   { return buildIndustry(INDUSTRY.education, xOffset); }
+function buildComputers(xOffset)   { return buildIndustry(INDUSTRY.computers, xOffset); }
+function buildBeauty(xOffset)      { return buildIndustry(INDUSTRY.beauty, xOffset); }
+function buildFurniture(xOffset)   { return buildIndustry(INDUSTRY.furniture, xOffset); }
+function buildFitness(xOffset)     { return buildIndustry(INDUSTRY.fitness, xOffset); }
+function buildEvents(xOffset)      { return buildIndustry(INDUSTRY.events, xOffset); }
+function buildWholesale(xOffset)   { return buildIndustry(INDUSTRY.wholesale, xOffset); }
+
 // ── MAIN ─────────────────────────────────────────────────────
+
+const BUILDERS = {
+  ecommerce:     (x) => buildEcommerce(x),
+  retail:        (x) => buildRetail(x),
+  nonprofits:    (x) => buildNonprofits(x),
+  landing:       (x) => buildLanding(x),
+  landing_plain: (x) => buildLandingPlainInspired(x),
+  restaurants:   buildRestaurants,
+  travel:        buildTravel,
+  education:     buildEducation,
+  computers:     buildComputers,
+  beauty:        buildBeauty,
+  furniture:     buildFurniture,
+  fitness:       buildFitness,
+  events:        buildEvents,
+  wholesale:     buildWholesale,
+};
 
 async function main() {
   await loadFonts();
+  figma.showUI(__html__, { width: 360, height: 510, title: 'HitPay Landing Pages' });
 
-  const ecomm = buildEcommerce();
-  const retail = buildRetail();
-  const np = buildNonprofits();
-  const landing = buildLanding();
-  const plain = buildLandingPlainInspired();
+  figma.ui.onmessage = async (msg) => {
+    if (msg.type === 'cancel') {
+      figma.closePlugin();
+      return;
+    }
+    if (msg.type !== 'generate' || !msg.pages || msg.pages.length === 0) return;
 
-  figma.currentPage.appendChild(ecomm);
-  figma.currentPage.appendChild(retail);
-  figma.currentPage.appendChild(np);
-  figma.currentPage.appendChild(landing);
-  figma.currentPage.appendChild(plain);
+    const frames = [];
+    let x = 0;
+    for (const id of msg.pages) {
+      if (BUILDERS[id]) {
+        const frame = BUILDERS[id](x);
+        figma.currentPage.appendChild(frame);
+        frames.push(frame);
+        x += 1540;
+      }
+    }
 
-  figma.viewport.scrollAndZoomIntoView([ecomm, retail, np, landing, plain]);
-  figma.closePlugin('✅ HitPay landing pages created! 5 frames at 1440px.');
+    if (frames.length > 0) {
+      figma.viewport.scrollAndZoomIntoView(frames);
+    }
+    const n = frames.length;
+    figma.closePlugin(`✅ ${n} page${n !== 1 ? 's' : ''} created at 1440px.`);
+  };
 }
 
 main().catch(err => {
